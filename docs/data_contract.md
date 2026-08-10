@@ -73,3 +73,28 @@
     "R2 出接口 physical_status 为 DOWN"
   ]
 }
+
+## 5. V1 命名约定
+
+以下字段名和取值是 V1 的统一接口，scenario、parser、agent、评测文件必须遵守。
+
+### 5.1 接口名称
+
+程序字段统一使用华为接口全称，例如：
+
+```text
+GigabitEthernet0/0/1
+```
+
+不使用 `GE0/0/1` 作为结构化数据中的接口值。若原始 CLI 回显使用缩写，由 Parser 负责归一化为全称。
+
+### 5.2 结构化事实字段
+
+```text
+route_found
+entry_found
+physical_status
+protocol_status
+```
+
+接口状态取值统一为 `UP` 或 `DOWN`。ARP 是否存在统一使用 `entry_found`，不使用 `arp_entry_found`。
