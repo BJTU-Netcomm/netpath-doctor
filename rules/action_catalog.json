@@ -1,0 +1,69 @@
+{
+  "actions": {
+    "RUN_PING": {
+      "description": "检查目标IP连通性",
+      "required_parameters": [
+        "target_ip"
+      ],
+      "command_template": "ping {target_ip}",
+      "read_only": true
+    },
+
+    "RUN_TRACERT": {
+      "description": "追踪目标IP的转发路径",
+      "required_parameters": [
+        "target_ip"
+      ],
+      "command_template": "tracert {target_ip}",
+      "read_only": true
+    },
+
+    "CHECK_ROUTE": {
+      "description": "检查指定设备上的目标路由",
+      "required_parameters": [
+        "device",
+        "destination"
+      ],
+      "command_template": "display ip routing-table {destination}",
+      "read_only": true
+    },
+
+    "CHECK_INTERFACE": {
+      "description": "检查指定设备接口状态",
+      "required_parameters": [
+        "device",
+        "interface"
+      ],
+      "command_template": "display interface {interface}",
+      "read_only": true
+    },
+
+    "CHECK_ARP": {
+      "description": "检查指定设备上的ARP表项",
+      "required_parameters": [
+        "device",
+        "target_ip"
+      ],
+      "command_template": "display arp {target_ip}",
+      "read_only": true
+    },
+
+    "FINISH_DIAGNOSIS": {
+      "description": "结束诊断并输出最终诊断结果",
+      "required_parameters": [
+        "diagnosis"
+      ],
+      "command_template": null,
+      "read_only": true
+    },
+
+    "REQUEST_MORE_DATA": {
+      "description": "当前信息不足，请求更多诊断数据",
+      "required_parameters": [
+        "missing_fields"
+      ],
+      "command_template": null,
+      "read_only": true
+    }
+  }
+}
