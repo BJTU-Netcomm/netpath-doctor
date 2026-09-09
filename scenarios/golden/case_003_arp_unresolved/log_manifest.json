@@ -1,0 +1,10 @@
+{
+  "context": {"ip_to_device": {"10.0.12.2": "R2"}},
+  "actions": {
+    "RUN_PING": {"device": "R1", "file": "ping.txt"},
+    "RUN_TRACERT": {"device": "R1", "file": "tracert.txt"},
+    "CHECK_ROUTE": {"R2": {"device": "R2", "file": "route_r2.txt"}},
+    "CHECK_INTERFACE": {"R2:GigabitEthernet0/0/1": {"device": "R2", "file": "interface_r2.txt"}},
+    "CHECK_ARP": {"R2": {"device": "R2", "file": "arp_r2.txt"}}
+  }
+}

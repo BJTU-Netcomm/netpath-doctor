@@ -1,0 +1,6 @@
+{
+  "RUN_PING": {
+    "reachable": true,
+    "packet_loss": 0
+  }
+}

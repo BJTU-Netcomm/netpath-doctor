@@ -20,8 +20,8 @@
 
     "CHECK_ROUTE": {
       "description": "检查指定设备上的目标路由",
+      "target_device_required": true,
       "required_parameters": [
-        "device",
         "destination"
       ],
       "command_template": "display ip routing-table {destination}",
@@ -30,8 +30,8 @@
 
     "CHECK_INTERFACE": {
       "description": "检查指定设备接口状态",
+      "target_device_required": true,
       "required_parameters": [
-        "device",
         "interface"
       ],
       "command_template": "display interface {interface}",
@@ -40,8 +40,8 @@
 
     "CHECK_ARP": {
       "description": "检查指定设备上的ARP表项",
+      "target_device_required": true,
       "required_parameters": [
-        "device",
         "target_ip"
       ],
       "command_template": "display arp {target_ip}",

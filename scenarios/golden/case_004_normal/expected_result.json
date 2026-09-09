@@ -1,0 +1,13 @@
+{
+  "case_id": "CASE_004",
+  "diagnosis_status": "NORMAL",
+  "fault_device": null,
+  "fault_type": null,
+  "fault_interface": null,
+  "required_evidence": [
+    "ping 成功"
+  ],
+  "expected_actions": [
+    "RUN_PING"
+  ]
+}

@@ -1,0 +1,6 @@
+<R1>ping 192.168.3.10
+  PING 192.168.3.10: 56 data bytes
+  --- 192.168.3.10 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss

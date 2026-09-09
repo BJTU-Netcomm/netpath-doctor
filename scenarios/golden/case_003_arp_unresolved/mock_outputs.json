@@ -1,0 +1,29 @@
+{
+  "RUN_PING": {
+    "reachable": false,
+    "packet_loss": 100
+  },
+  "RUN_TRACERT": {
+    "last_reachable_device": "R2",
+    "suspect_device": "R2"
+  },
+  "CHECK_ROUTE": {
+    "R2": {
+      "route_found": true,
+      "next_hop": "192.168.3.10",
+      "out_interface": "GigabitEthernet0/0/1"
+    }
+  },
+  "CHECK_INTERFACE": {
+    "R2:GigabitEthernet0/0/1": {
+      "interface": "GigabitEthernet0/0/1",
+      "physical_status": "UP",
+      "protocol_status": "UP"
+    }
+  },
+  "CHECK_ARP": {
+    "R2": {
+      "entry_found": false
+    }
+  }
+}

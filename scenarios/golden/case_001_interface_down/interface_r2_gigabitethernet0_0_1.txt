@@ -1,0 +1,7 @@
+<R2>display interface GigabitEthernet0/0/1
+GigabitEthernet0/0/1 current state : DOWN
+Line protocol current state : DOWN
+Description:
+Route Port, The Maximum Transmit Unit is 1500
+Internet Address is 10.0.23.1/30
+IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is 00e0-fc00-0002

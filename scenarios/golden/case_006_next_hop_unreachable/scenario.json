@@ -1,0 +1,14 @@
+{
+  "case_id": "CASE_006",
+  "title": "R2 路由下一跳不可达",
+  "topology_id": "TOPOLOGY_001",
+  "source_ip": "192.168.1.10",
+  "destination_ip": "192.168.3.10",
+  "destination_network": "192.168.3.0/24",
+  "vendor": "huawei_vrp",
+  "ground_truth": {
+    "fault_device": "R2",
+    "fault_type": "NEXT_HOP_UNREACHABLE",
+    "next_hop": "10.0.23.2"
+  }
+}

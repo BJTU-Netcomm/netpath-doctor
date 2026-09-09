@@ -1,0 +1,19 @@
+{
+  "case_id": "CASE_002",
+  "diagnosis_status": "COMPLETED",
+  "fault_device": "R2",
+  "fault_type": "ROUTE_MISSING",
+  "fault_interface": null,
+  "target_network": "192.168.3.0/24",
+  "required_evidence": [
+    "ping 100% 丢包",
+    "tracert 最后可达 R2",
+    "R2 目标路由不存在"
+  ],
+  "expected_actions": [
+    "RUN_PING",
+    "RUN_TRACERT",
+    "CHECK_ROUTE",
+    "FINISH_DIAGNOSIS"
+  ]
+}

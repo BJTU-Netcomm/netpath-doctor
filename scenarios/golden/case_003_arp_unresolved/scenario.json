@@ -1,0 +1,13 @@
+{
+  "case_id": "CASE_003",
+  "title": "R2 到目标地址 ARP 未解析",
+  "topology_id": "TOPOLOGY_001",
+  "source_ip": "192.168.1.10",
+  "destination_ip": "192.168.3.10",
+  "vendor": "huawei_vrp",
+  "ground_truth": {
+    "fault_device": "R2",
+    "fault_type": "ARP_UNRESOLVED",
+    "fault_interface": "GigabitEthernet0/0/1"
+  }
+}

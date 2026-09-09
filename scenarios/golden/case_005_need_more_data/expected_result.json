@@ -1,0 +1,23 @@
+{
+  "case_id": "CASE_005",
+  "diagnosis_status": "NEED_MORE_DATA",
+  "fault_device": null,
+  "fault_type": null,
+  "fault_interface": null,
+  "required_evidence": [
+    "ping 100% 丢包",
+    "tracert 最后可达 R2",
+    "R2 目标路由存在"
+  ],
+  "missing_fields": [
+    "deeper_control_plane_checks"
+  ],
+  "expected_actions": [
+    "RUN_PING",
+    "RUN_TRACERT",
+    "CHECK_ROUTE",
+    "CHECK_INTERFACE",
+    "CHECK_ARP",
+    "REQUEST_MORE_DATA"
+  ]
+}

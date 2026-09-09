@@ -1,0 +1,22 @@
+{
+  "case_id": "CASE_003",
+  "diagnosis_status": "COMPLETED",
+  "fault_device": "R2",
+  "fault_type": "ARP_UNRESOLVED",
+  "fault_interface": "GigabitEthernet0/0/1",
+  "target_ip": "192.168.3.10",
+  "required_evidence": [
+    "ping 100% 丢包",
+    "tracert 最后可达 R2",
+    "R2 目标路由存在",
+    "R2 上 ARP 表项缺失"
+  ],
+  "expected_actions": [
+    "RUN_PING",
+    "RUN_TRACERT",
+    "CHECK_ROUTE",
+    "CHECK_INTERFACE",
+    "CHECK_ARP",
+    "FINISH_DIAGNOSIS"
+  ]
+}

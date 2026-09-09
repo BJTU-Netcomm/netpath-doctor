@@ -1,0 +1,8 @@
+<R1>tracert 192.168.3.10
+ traceroute to 192.168.3.10(192.168.3.10), max hops: 30, packet length: 40, press CTRL_C to break
+
+ 1  10.0.12.2  10 ms  10 ms  10 ms
+ 2  *  *  *
+ 3  *  *  *
+ 4  *  *  *
+ 5  *  *  *

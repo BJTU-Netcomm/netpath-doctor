@@ -1,0 +1,15 @@
+{
+  "RUN_PING": {
+    "reachable": false,
+    "packet_loss": 100
+  },
+  "RUN_TRACERT": {
+    "last_reachable_device": "R2",
+    "suspect_device": "R2"
+  },
+  "CHECK_ROUTE": {
+    "R2": {
+      "route_found": false
+    }
+  }
+}

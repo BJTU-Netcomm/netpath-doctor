@@ -1,0 +1,5 @@
+{
+  "actions": {
+    "RUN_PING": {"device": "R1", "file": "ping.txt"}
+  }
+}

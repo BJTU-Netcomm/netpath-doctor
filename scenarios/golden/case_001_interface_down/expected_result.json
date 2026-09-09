@@ -1,0 +1,20 @@
+{
+  "case_id": "CASE_001",
+  "diagnosis_status": "COMPLETED",
+  "fault_device": "R2",
+  "fault_type": "INTERFACE_DOWN",
+  "fault_interface": "GigabitEthernet0/0/1",
+  "required_evidence": [
+    "ping 100% 丢包",
+    "tracert 最后可达 R2",
+    "R2 目标路由存在",
+    "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+  ],
+  "expected_actions": [
+    "RUN_PING",
+    "RUN_TRACERT",
+    "CHECK_ROUTE",
+    "CHECK_INTERFACE",
+    "FINISH_DIAGNOSIS"
+  ]
+}

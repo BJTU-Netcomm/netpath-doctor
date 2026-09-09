@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+from benchmarks.runner import run_benchmark
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+class BenchmarkTests(unittest.TestCase):
+    def test_all_golden_cases_pass(self) -> None:
+        report = run_benchmark(REPO_ROOT)
+
+        self.assertEqual(report["total"], 6)
+        self.assertEqual(report["passed"], 6)
+        self.assertTrue(report["all_passed"])
+        self.assertEqual(report["pass_rate"], 1.0)
+        self.assertEqual(report["execution_modes"], {"cli_replay": 6})
+        case_001 = next(case for case in report["cases"] if case["case_id"] == "CASE_001")
+        self.assertEqual(case_001["execution_mode"], "cli_replay")
+
+
+if __name__ == "__main__":
+    unittest.main()
