@@ -18,8 +18,16 @@ class NetPathDoctorController:
     def run_scenario(self, scenario_path: str | Path) -> dict:
         scenario_path = Path(scenario_path)
         scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
+        return self.run_scenario_data(scenario, scenario_path.parent)
+
+    def run_scenario_data(
+        self,
+        scenario: dict,
+        case_dir: str | Path,
+    ) -> dict:
+        scenario = dict(scenario)
         scenario.pop("ground_truth", None)
-        case_dir = scenario_path.parent
+        case_dir = Path(case_dir)
 
         if (case_dir / "log_manifest.json").exists():
             executor = ReplayExecutor(scenario, self.action_catalog, case_dir)

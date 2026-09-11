@@ -57,12 +57,13 @@ def _evaluate_case(
         mock_path = case_dir / "mock_outputs.json"
         if not mock_path.exists():
             raise FileNotFoundError(f"Case has no replay manifest or mock outputs: {case_dir}")
-    actual = NetPathDoctorController(repo_root).run_scenario(case_dir / "scenario.json")
+    actual = NetPathDoctorController(repo_root).run_scenario_data(scenario, case_dir)
 
     checks = {
         field: actual.get(field) == expected.get(field)
         for field in DIAGNOSIS_FIELDS
     }
+    checks["case_id"] = actual.get("case_id") == expected.get("case_id")
     checks["required_evidence"] = all(
         evidence in actual.get("required_evidence", [])
         for evidence in expected.get("required_evidence", [])

@@ -20,6 +20,14 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(report["execution_modes"], {"cli_replay": 20})
         case_001 = next(case for case in report["cases"] if case["case_id"] == "CASE_001")
         self.assertEqual(case_001["execution_mode"], "cli_replay")
+        for case in report["cases"]:
+            self.assertEqual(case["actual"]["case_id"], case["case_id"])
+
+        case_010 = next(case for case in report["cases"] if case["case_id"] == "CASE_010")
+        self.assertEqual(
+            case_010["actual"]["action_trace"][0]["parameters"]["target_ip"],
+            "192.168.3.11",
+        )
 
 
 if __name__ == "__main__":

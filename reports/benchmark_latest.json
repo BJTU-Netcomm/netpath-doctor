@@ -19,6 +19,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
@@ -111,6 +112,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_network": true
@@ -196,6 +198,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_ip": true
@@ -301,6 +304,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
@@ -347,6 +351,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "missing_fields": true
@@ -451,6 +456,7 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "next_hop": true
@@ -556,11 +562,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_001",
+        "case_id": "CASE_007",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "INTERFACE_DOWN",
@@ -648,11 +655,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_001",
+        "case_id": "CASE_008",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "INTERFACE_DOWN",
@@ -740,11 +748,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_001",
+        "case_id": "CASE_009",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "INTERFACE_DOWN",
@@ -832,11 +841,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_001",
+        "case_id": "CASE_010",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "INTERFACE_DOWN",
@@ -852,7 +862,7 @@
             "action": "RUN_PING",
             "target_device": null,
             "parameters": {
-              "target_ip": "192.168.3.10"
+              "target_ip": "192.168.3.11"
             },
             "reason": "初始连通性检查"
           },
@@ -860,7 +870,7 @@
             "action": "RUN_TRACERT",
             "target_device": null,
             "parameters": {
-              "target_ip": "192.168.3.10"
+              "target_ip": "192.168.3.11"
             },
             "reason": "定位最后可达节点"
           },
@@ -868,7 +878,7 @@
             "action": "CHECK_ROUTE",
             "target_device": "R2",
             "parameters": {
-              "destination": "192.168.3.10"
+              "destination": "192.168.3.11"
             },
             "reason": "确认疑似故障设备上的目标路由"
           },
@@ -924,12 +934,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_network": true
       },
       "actual": {
-        "case_id": "CASE_002",
+        "case_id": "CASE_011",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ROUTE_MISSING",
@@ -1009,12 +1020,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_network": true
       },
       "actual": {
-        "case_id": "CASE_002",
+        "case_id": "CASE_012",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ROUTE_MISSING",
@@ -1094,12 +1106,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_network": true
       },
       "actual": {
-        "case_id": "CASE_002",
+        "case_id": "CASE_013",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ROUTE_MISSING",
@@ -1114,7 +1127,7 @@
             "action": "RUN_PING",
             "target_device": null,
             "parameters": {
-              "target_ip": "192.168.3.10"
+              "target_ip": "192.168.3.11"
             },
             "reason": "初始连通性检查"
           },
@@ -1122,7 +1135,7 @@
             "action": "RUN_TRACERT",
             "target_device": null,
             "parameters": {
-              "target_ip": "192.168.3.10"
+              "target_ip": "192.168.3.11"
             },
             "reason": "定位最后可达节点"
           },
@@ -1130,7 +1143,7 @@
             "action": "CHECK_ROUTE",
             "target_device": "R2",
             "parameters": {
-              "destination": "192.168.3.10"
+              "destination": "192.168.3.11"
             },
             "reason": "确认疑似故障设备上的目标路由"
           },
@@ -1179,12 +1192,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_ip": true
       },
       "actual": {
-        "case_id": "CASE_003",
+        "case_id": "CASE_014",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ARP_UNRESOLVED",
@@ -1284,12 +1298,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_ip": true
       },
       "actual": {
-        "case_id": "CASE_003",
+        "case_id": "CASE_015",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ARP_UNRESOLVED",
@@ -1389,12 +1404,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "target_ip": true
       },
       "actual": {
-        "case_id": "CASE_003",
+        "case_id": "CASE_016",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "ARP_UNRESOLVED",
@@ -1494,11 +1510,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_004",
+        "case_id": "CASE_017",
         "diagnosis_status": "NORMAL",
         "fault_device": null,
         "fault_type": null,
@@ -1540,11 +1557,12 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true
       },
       "actual": {
-        "case_id": "CASE_004",
+        "case_id": "CASE_018",
         "diagnosis_status": "NORMAL",
         "fault_device": null,
         "fault_type": null,
@@ -1586,12 +1604,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "next_hop": true
       },
       "actual": {
-        "case_id": "CASE_006",
+        "case_id": "CASE_019",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "NEXT_HOP_UNREACHABLE",
@@ -1691,12 +1710,13 @@
         "fault_device": true,
         "fault_type": true,
         "fault_interface": true,
+        "case_id": true,
         "required_evidence": true,
         "action_trace": true,
         "next_hop": true
       },
       "actual": {
-        "case_id": "CASE_006",
+        "case_id": "CASE_020",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "NEXT_HOP_UNREACHABLE",
