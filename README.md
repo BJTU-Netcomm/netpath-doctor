@@ -13,4 +13,4 @@
 python -m benchmarks.runner
 ```
 
-当前 benchmark 覆盖 6 个案例，检查诊断结果、证据链和 Agent 动作顺序。详细说明见 `benchmarks/README.md`。
+当前 benchmark 覆盖 20 个案例，检查诊断结果、证据链和 Agent 动作顺序。详细说明见 `benchmarks/README.md`。

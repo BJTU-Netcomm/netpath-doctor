@@ -24,6 +24,8 @@ python -m benchmarks.runner --output reports/benchmark_latest.json
 - Agent 实际动作顺序；
 - 需要更多数据时的字段列表。
 
+当前案例覆盖 20 个：6 个独立 CLI 日志基线案例，以及 `scenarios/benchmark_matrix.json` 中复用基线日志的 14 个参数化回归案例。参数化案例用于扩大输入组合，所有标准答案仍由独立 `expected_result` 派生并参与比较。
+
 当前案例覆盖：
 
 | 案例 | 预期结果 | 覆盖路径 |
@@ -34,5 +36,6 @@ python -m benchmarks.runner --output reports/benchmark_latest.json
 | `CASE_004` | `NORMAL` | 初始 ping 成功 |
 | `CASE_005` | `NEED_MORE_DATA` | 现有只读证据不足以继续收敛 |
 | `CASE_006` | `NEXT_HOP_UNREACHABLE` | 路由存在，但下一跳不可达 |
+| `CASE_007`–`CASE_020` | 以上结果的参数化变体 | 回归不同输入标识和日志复用路径 |
 
 退出码为 `0` 表示所有案例通过，退出码为 `1` 表示至少一个案例失败。六个案例都通过 `log_manifest.json` 关联原始 CLI 日志，并使用 `ReplayExecutor` 调用 Parser；`mock_outputs.json` 仅保留为单元测试和故障隔离时的备用数据。benchmark 运行时会移除 `ground_truth`，它只用于人工检查案例定义，Agent 无法读取标准答案。

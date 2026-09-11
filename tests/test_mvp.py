@@ -7,6 +7,7 @@ from agent.action_schema import AgentAction, validate_action
 from agent.command_mapper import load_action_catalog, render_command
 from agent.state_machine import DiagnosisStateMachine
 from tool_server.mock_executor import MockExecutor
+from tool_server.live_executor import LiveExecutor
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -80,6 +81,27 @@ class MvpFlowTests(unittest.TestCase):
             [step["action"] for step in result["action_trace"]],
             ["RUN_PING", "REQUEST_MORE_DATA"],
         )
+
+    def test_live_executor_sends_command_and_parses_reply(self) -> None:
+        catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
+
+        class FakeTransport:
+            def __init__(self) -> None:
+                self.calls = []
+
+            def send(self, device: str | None, command: str | None) -> str:
+                self.calls.append((device, command))
+                return "5 packet(s) transmitted\n5 packet(s) received\n0.00% packet loss"
+
+        transport = FakeTransport()
+        executor = LiveExecutor({"vendor": "huawei_vrp"}, catalog, transport)
+        result = executor.execute(
+            AgentAction(action="RUN_PING", parameters={"target_ip": "192.168.3.10"})
+        )
+
+        self.assertTrue(result["success"])
+        self.assertTrue(result["facts"]["reachable"])
+        self.assertEqual(transport.calls, [(None, "ping 192.168.3.10")])
 
 
 if __name__ == "__main__":

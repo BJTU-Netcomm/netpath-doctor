@@ -1,0 +1,26 @@
+{
+  "INTERFACE_DOWN": {
+    "name": "接口关闭或物理故障",
+    "description": "路径在某节点后中断，目标路由存在，但相关出接口物理状态为 DOWN。",
+    "required_evidence": ["target_unreachable", "route_found=true", "physical_status=DOWN"],
+    "result_fields": ["fault_device", "fault_interface"]
+  },
+  "ROUTE_MISSING": {
+    "name": "目标路由缺失",
+    "description": "目标设备路由表中不存在到目标网络或目标地址的有效路由。",
+    "required_evidence": ["target_unreachable", "route_found=false"],
+    "result_fields": ["fault_device", "target_network"]
+  },
+  "NEXT_HOP_UNREACHABLE": {
+    "name": "下一跳不可达",
+    "description": "目标路由存在、出接口正常，但下一跳没有有效 ARP 表项。",
+    "required_evidence": ["route_found=true", "physical_status=UP", "next_hop_unreachable=true"],
+    "result_fields": ["fault_device", "next_hop"]
+  },
+  "ARP_UNRESOLVED": {
+    "name": "ARP 解析异常",
+    "description": "目标路由和相关接口状态正常，但目标 IP 没有有效 ARP 表项。",
+    "required_evidence": ["route_found=true", "physical_status=UP", "entry_found=false"],
+    "result_fields": ["fault_device", "target_ip"]
+  }
+}

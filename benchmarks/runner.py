@@ -36,6 +36,15 @@ def run_case(repo_root: str | Path, case_dir: str | Path) -> CaseResult:
     case_dir = Path(case_dir)
     scenario = _read_json(case_dir / "scenario.json")
     expected = _read_json(case_dir / "expected_result.json")
+    return _evaluate_case(repo_root, case_dir, scenario, expected)
+
+
+def _evaluate_case(
+    repo_root: Path,
+    case_dir: Path,
+    scenario: dict[str, Any],
+    expected: dict[str, Any],
+) -> CaseResult:
     if scenario.get("case_id") != expected.get("case_id"):
         raise ValueError(
             f"case_id mismatch in {case_dir}: "
@@ -77,6 +86,20 @@ def run_case(repo_root: str | Path, case_dir: str | Path) -> CaseResult:
     )
 
 
+def run_matrix_case(repo_root: str | Path, definition: dict[str, Any]) -> CaseResult:
+    repo_root = Path(repo_root)
+    base_dir = repo_root / "scenarios" / "golden" / definition["base_case"]
+    if not base_dir.exists():
+        raise FileNotFoundError(f"Matrix base case does not exist: {base_dir}")
+    scenario = _read_json(base_dir / "scenario.json")
+    expected = _read_json(base_dir / "expected_result.json")
+    scenario.update(definition.get("scenario", {}))
+    expected.update(definition.get("expected", {}))
+    scenario["case_id"] = definition["case_id"]
+    expected["case_id"] = definition["case_id"]
+    return _evaluate_case(repo_root, base_dir, scenario, expected)
+
+
 def discover_cases(repo_root: str | Path) -> list[Path]:
     root = Path(repo_root) / "scenarios" / "golden"
     if not root.exists():
@@ -93,6 +116,10 @@ def discover_cases(repo_root: str | Path) -> list[Path]:
 def run_benchmark(repo_root: str | Path) -> dict[str, Any]:
     repo_root = Path(repo_root)
     results = [run_case(repo_root, case_dir) for case_dir in discover_cases(repo_root)]
+    matrix_path = repo_root / "scenarios" / "benchmark_matrix.json"
+    if matrix_path.exists():
+        matrix = _read_json(matrix_path)
+        results.extend(run_matrix_case(repo_root, definition) for definition in matrix.get("cases", []))
     case_ids = [result.case_id for result in results]
     if len(case_ids) != len(set(case_ids)):
         raise ValueError("Golden scenarios contain duplicate case_id values")

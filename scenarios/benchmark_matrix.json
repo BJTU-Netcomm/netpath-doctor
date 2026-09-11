@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "description": "参数化回归案例，复用已审核的 CLI 日志基线并覆盖不同输入标识。",
+  "cases": [
+    {"case_id": "CASE_007", "base_case": "case_001_interface_down", "scenario": {"title": "接口 Down 变体 A"}},
+    {"case_id": "CASE_008", "base_case": "case_001_interface_down", "scenario": {"title": "接口 Down 变体 B"}},
+    {"case_id": "CASE_009", "base_case": "case_001_interface_down", "scenario": {"source_ip": "192.168.1.11", "title": "接口 Down 变体 C"}},
+    {"case_id": "CASE_010", "base_case": "case_001_interface_down", "scenario": {"destination_ip": "192.168.3.11", "title": "接口 Down 变体 D"}},
+    {"case_id": "CASE_011", "base_case": "case_002_route_missing", "scenario": {"title": "路由缺失变体 A"}},
+    {"case_id": "CASE_012", "base_case": "case_002_route_missing", "scenario": {"source_ip": "192.168.1.11", "title": "路由缺失变体 B"}},
+    {"case_id": "CASE_013", "base_case": "case_002_route_missing", "scenario": {"destination_ip": "192.168.3.11", "title": "路由缺失变体 C"}},
+    {"case_id": "CASE_014", "base_case": "case_003_arp_unresolved", "scenario": {"title": "ARP 异常变体 A"}},
+    {"case_id": "CASE_015", "base_case": "case_003_arp_unresolved", "scenario": {"source_ip": "192.168.1.11", "title": "ARP 异常变体 B"}},
+    {"case_id": "CASE_016", "base_case": "case_003_arp_unresolved", "scenario": {"destination_ip": "192.168.3.11", "title": "ARP 异常变体 C"}},
+    {"case_id": "CASE_017", "base_case": "case_004_normal", "scenario": {"title": "正常连通变体 A"}},
+    {"case_id": "CASE_018", "base_case": "case_004_normal", "scenario": {"source_ip": "192.168.1.11", "title": "正常连通变体 B"}},
+    {"case_id": "CASE_019", "base_case": "case_006_next_hop_unreachable", "scenario": {"title": "下一跳异常变体 A"}},
+    {"case_id": "CASE_020", "base_case": "case_006_next_hop_unreachable", "scenario": {"source_ip": "192.168.1.11", "title": "下一跳异常变体 B"}}
+  ]
+}

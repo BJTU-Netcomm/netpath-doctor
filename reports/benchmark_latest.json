@@ -1,13 +1,13 @@
 {
   "benchmark": "NetPath-Doctor golden scenarios",
   "benchmark_version": "1.0",
-  "total": 6,
-  "passed": 6,
+  "total": 20,
+  "passed": 20,
   "failed": 0,
   "pass_rate": 1.0,
   "all_passed": true,
   "execution_modes": {
-    "cli_replay": 6
+    "cli_replay": 20
   },
   "cases": [
     {
@@ -526,6 +526,1246 @@
       },
       "expected": {
         "case_id": "CASE_006",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "NEXT_HOP_UNREACHABLE",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "next_hop": "10.0.23.2",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 下一跳 10.0.23.2 不可达"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "CHECK_ARP",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_007",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_001",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "INTERFACE_DOWN",
+                "fault_interface": "GigabitEthernet0/0/1"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_007",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_008",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_001",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "INTERFACE_DOWN",
+                "fault_interface": "GigabitEthernet0/0/1"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_008",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_009",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_001",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "INTERFACE_DOWN",
+                "fault_interface": "GigabitEthernet0/0/1"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_009",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_010",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_001",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "INTERFACE_DOWN",
+                "fault_interface": "GigabitEthernet0/0/1"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_010",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "INTERFACE_DOWN",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 出接口 GigabitEthernet0/0/1 physical_status 为 DOWN"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_011",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_network": true
+      },
+      "actual": {
+        "case_id": "CASE_002",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ROUTE_MISSING",
+                "fault_interface": null,
+                "target_network": "192.168.3.0/24"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_network": "192.168.3.0/24"
+      },
+      "expected": {
+        "case_id": "CASE_011",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "target_network": "192.168.3.0/24",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_012",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_network": true
+      },
+      "actual": {
+        "case_id": "CASE_002",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ROUTE_MISSING",
+                "fault_interface": null,
+                "target_network": "192.168.3.0/24"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_network": "192.168.3.0/24"
+      },
+      "expected": {
+        "case_id": "CASE_012",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "target_network": "192.168.3.0/24",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_013",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_network": true
+      },
+      "actual": {
+        "case_id": "CASE_002",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ROUTE_MISSING",
+                "fault_interface": null,
+                "target_network": "192.168.3.0/24"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_network": "192.168.3.0/24"
+      },
+      "expected": {
+        "case_id": "CASE_013",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ROUTE_MISSING",
+        "fault_interface": null,
+        "target_network": "192.168.3.0/24",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由不存在"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_014",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_ip": true
+      },
+      "actual": {
+        "case_id": "CASE_003",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "CHECK_ARP",
+            "target_device": "R2",
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "接口正常后继续确认二层可达性"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ARP_UNRESOLVED",
+                "fault_interface": "GigabitEthernet0/0/1",
+                "target_ip": "192.168.3.10"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_ip": "192.168.3.10"
+      },
+      "expected": {
+        "case_id": "CASE_014",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "target_ip": "192.168.3.10",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "CHECK_ARP",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_015",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_ip": true
+      },
+      "actual": {
+        "case_id": "CASE_003",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "CHECK_ARP",
+            "target_device": "R2",
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "接口正常后继续确认二层可达性"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ARP_UNRESOLVED",
+                "fault_interface": "GigabitEthernet0/0/1",
+                "target_ip": "192.168.3.10"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_ip": "192.168.3.10"
+      },
+      "expected": {
+        "case_id": "CASE_015",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "target_ip": "192.168.3.10",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "CHECK_ARP",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_016",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "target_ip": true
+      },
+      "actual": {
+        "case_id": "CASE_003",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "CHECK_ARP",
+            "target_device": "R2",
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "接口正常后继续确认二层可达性"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "ARP_UNRESOLVED",
+                "fault_interface": "GigabitEthernet0/0/1",
+                "target_ip": "192.168.3.10"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "target_ip": "192.168.3.10"
+      },
+      "expected": {
+        "case_id": "CASE_016",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "ARP_UNRESOLVED",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "target_ip": "192.168.3.10",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 上 ARP 表项缺失"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "CHECK_ARP",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_017",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_004",
+        "diagnosis_status": "NORMAL",
+        "fault_device": null,
+        "fault_type": null,
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 成功"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_017",
+        "diagnosis_status": "NORMAL",
+        "fault_device": null,
+        "fault_type": null,
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 成功"
+        ],
+        "expected_actions": [
+          "RUN_PING"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_018",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true
+      },
+      "actual": {
+        "case_id": "CASE_004",
+        "diagnosis_status": "NORMAL",
+        "fault_device": null,
+        "fault_type": null,
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 成功"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          }
+        ]
+      },
+      "expected": {
+        "case_id": "CASE_018",
+        "diagnosis_status": "NORMAL",
+        "fault_device": null,
+        "fault_type": null,
+        "fault_interface": null,
+        "required_evidence": [
+          "ping 成功"
+        ],
+        "expected_actions": [
+          "RUN_PING"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_019",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "next_hop": true
+      },
+      "actual": {
+        "case_id": "CASE_006",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "NEXT_HOP_UNREACHABLE",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 下一跳 10.0.23.2 不可达"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "CHECK_ARP",
+            "target_device": "R2",
+            "parameters": {
+              "target_ip": "10.0.23.2"
+            },
+            "reason": "接口正常后继续确认二层可达性"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "NEXT_HOP_UNREACHABLE",
+                "fault_interface": "GigabitEthernet0/0/1",
+                "next_hop": "10.0.23.2"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "next_hop": "10.0.23.2"
+      },
+      "expected": {
+        "case_id": "CASE_019",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "NEXT_HOP_UNREACHABLE",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "next_hop": "10.0.23.2",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 下一跳 10.0.23.2 不可达"
+        ],
+        "expected_actions": [
+          "RUN_PING",
+          "RUN_TRACERT",
+          "CHECK_ROUTE",
+          "CHECK_INTERFACE",
+          "CHECK_ARP",
+          "FINISH_DIAGNOSIS"
+        ]
+      }
+    },
+    {
+      "case_id": "CASE_020",
+      "execution_mode": "cli_replay",
+      "passed": true,
+      "checks": {
+        "diagnosis_status": true,
+        "fault_device": true,
+        "fault_type": true,
+        "fault_interface": true,
+        "required_evidence": true,
+        "action_trace": true,
+        "next_hop": true
+      },
+      "actual": {
+        "case_id": "CASE_006",
+        "diagnosis_status": "COMPLETED",
+        "fault_device": "R2",
+        "fault_type": "NEXT_HOP_UNREACHABLE",
+        "fault_interface": "GigabitEthernet0/0/1",
+        "required_evidence": [
+          "ping 100% 丢包",
+          "tracert 最后可达 R2",
+          "R2 目标路由存在",
+          "R2 下一跳 10.0.23.2 不可达"
+        ],
+        "action_trace": [
+          {
+            "action": "RUN_PING",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "初始连通性检查"
+          },
+          {
+            "action": "RUN_TRACERT",
+            "target_device": null,
+            "parameters": {
+              "target_ip": "192.168.3.10"
+            },
+            "reason": "定位最后可达节点"
+          },
+          {
+            "action": "CHECK_ROUTE",
+            "target_device": "R2",
+            "parameters": {
+              "destination": "192.168.3.10"
+            },
+            "reason": "确认疑似故障设备上的目标路由"
+          },
+          {
+            "action": "CHECK_INTERFACE",
+            "target_device": "R2",
+            "parameters": {
+              "interface": "GigabitEthernet0/0/1"
+            },
+            "reason": "检查目标转发表出接口状态"
+          },
+          {
+            "action": "CHECK_ARP",
+            "target_device": "R2",
+            "parameters": {
+              "target_ip": "10.0.23.2"
+            },
+            "reason": "接口正常后继续确认二层可达性"
+          },
+          {
+            "action": "FINISH_DIAGNOSIS",
+            "target_device": null,
+            "parameters": {
+              "diagnosis": {
+                "fault_device": "R2",
+                "fault_type": "NEXT_HOP_UNREACHABLE",
+                "fault_interface": "GigabitEthernet0/0/1",
+                "next_hop": "10.0.23.2"
+              }
+            },
+            "reason": "证据充分，结束诊断"
+          }
+        ],
+        "next_hop": "10.0.23.2"
+      },
+      "expected": {
+        "case_id": "CASE_020",
         "diagnosis_status": "COMPLETED",
         "fault_device": "R2",
         "fault_type": "NEXT_HOP_UNREACHABLE",
