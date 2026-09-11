@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import json
 from pathlib import Path
 
 from benchmarks.runner import run_benchmark
@@ -10,6 +11,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_fault_catalog_uses_v1_arp_fact_for_next_hop(self) -> None:
+        catalog = json.loads(
+            (REPO_ROOT / "rules" / "fault_catalog.json").read_text(encoding="utf-8")
+        )
+        evidence = catalog["NEXT_HOP_UNREACHABLE"]["required_evidence"]
+        self.assertIn("entry_found=false", evidence)
+        self.assertNotIn("next_hop_unreachable=true", evidence)
+
     def test_all_golden_cases_pass(self) -> None:
         report = run_benchmark(REPO_ROOT)
 

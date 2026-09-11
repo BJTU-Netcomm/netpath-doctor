@@ -140,3 +140,25 @@ NEXT_HOP_UNREACHABLE   -> next_hop
 ```
 
 这些字段用于补充定位对象，不替代 `fault_device`、`fault_type` 和 `fault_interface`。没有适用接口时，`fault_interface` 使用 `null`。
+### 5.5 V1 证据字段冻结
+
+`required_evidence` 在 V1 中固定为字符串数组，例如：
+
+```json
+[
+  "R2 目标路由存在",
+  "R2 下一跳 10.0.23.2 不可达"
+]
+```
+
+评测程序使用字符串包含匹配验证证据链。V1 不使用结构化证据对象；如果未来需要记录证据来源、设备、命令和原始 Facts，应在 V2 中新增版本化字段，不能直接改变 V1 的数组元素类型。
+
+### 5.6 下一跳不可达的统一判定字段
+
+`NEXT_HOP_UNREACHABLE` 不增加 `next_hop_unreachable` 这个 Parser 字段。统一判定依据是：
+
+1. `DISPLAY_ROUTE.facts.route_found=true`，并取得 `next_hop`；
+2. `DISPLAY_INTERFACE.facts.physical_status=UP`；
+3. 针对该 `next_hop` 执行 `DISPLAY_ARP`，得到 `facts.entry_found=false`。
+
+最终结果使用 `fault_type="NEXT_HOP_UNREACHABLE"` 和附加字段 `next_hop` 表达诊断结论；`entry_found` 只表示 ARP 检查事实。

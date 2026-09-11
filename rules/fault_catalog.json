@@ -14,7 +14,7 @@
   "NEXT_HOP_UNREACHABLE": {
     "name": "下一跳不可达",
     "description": "目标路由存在、出接口正常，但下一跳没有有效 ARP 表项。",
-    "required_evidence": ["route_found=true", "physical_status=UP", "next_hop_unreachable=true"],
+    "required_evidence": ["route_found=true", "physical_status=UP", "entry_found=false"],
     "result_fields": ["fault_device", "next_hop"]
   },
   "ARP_UNRESOLVED": {
