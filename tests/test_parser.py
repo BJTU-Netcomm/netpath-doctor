@@ -11,6 +11,11 @@ from parser.huawei_vrp import (
     parse_route,
     parse_tracert,
 )
+from parser.arp_parser import parse_arp as parse_arp_compat
+from parser.interface_parser import parse_interface as parse_interface_compat
+from parser.ping_parser import parse_ping as parse_ping_compat
+from parser.route_parser import parse_route as parse_route_compat
+from parser.tracert_parser import parse_tracert as parse_tracert_compat
 
 
 class HuaweiVrpParserTests(unittest.TestCase):
@@ -49,6 +54,17 @@ class HuaweiVrpParserTests(unittest.TestCase):
         self.assertEqual(result["facts"], {})
         self.assertIn("Unsupported", result["error"])
 
+    def test_unknown_vendor_returns_parser_error(self) -> None:
+        result = parse_cli_output(
+            "PING",
+            "5 packet(s) transmitted\n0.00% packet loss",
+            device="R2",
+            vendor="cisco_ios",
+        )
+        self.assertFalse(result["success"])
+        self.assertEqual(result["facts"], {})
+        self.assertIn("Unsupported vendor", result["error"])
+
     def test_unrecognized_route_output_is_a_parser_error(self) -> None:
         result = parse_cli_output("CHECK_ROUTE", "unexpected output", device="R2")
         self.assertFalse(result["success"])
@@ -69,6 +85,69 @@ class HuaweiVrpParserTests(unittest.TestCase):
             normalize_interface("GigabitEthernet0/0/1"),
             "GigabitEthernet0/0/1",
         )
+
+    def test_compatibility_entrypoints_use_unified_envelope(self) -> None:
+        self.assertEqual(
+            parse_ping_compat("5 packet(s) transmitted\n0.00% packet loss", "R1"),
+            {
+                "success": True,
+                "device": "R1",
+                "vendor": "huawei_vrp",
+                "command_type": "PING",
+                "facts": {"reachable": True, "packet_loss": 0},
+                "error": None,
+            },
+        )
+        route = parse_route_compat("Summary Count : 0", "R1")
+        self.assertTrue(route["success"])
+        self.assertEqual(route["facts"], {"route_found": False})
+
+    def test_compatibility_entrypoints_preserve_parser_facts(self) -> None:
+        interface = parse_interface_compat(
+            "GE0/0/1 current state : UP\nLine protocol current state : UP", "R1"
+        )
+        self.assertEqual(interface["facts"]["interface"], "GigabitEthernet0/0/1")
+        self.assertEqual(interface["facts"]["physical_status"], "UP")
+
+        arp = parse_arp_compat(
+            "10.0.0.2  00e0-fc00-0003  20  D-0  GE0/0/1",
+            "R1",
+            target_ip="10.0.0.2",
+        )
+        self.assertTrue(arp["facts"]["entry_found"])
+
+        tracert = parse_tracert_compat(
+            "1  10.0.0.2  10 ms  10 ms  10 ms\n2  *  *  *",
+            "R1",
+            context={"ip_to_device": {"10.0.0.2": "R2"}},
+        )
+        self.assertEqual(tracert["facts"]["suspect_device"], "R2")
+
+    def test_compatibility_entrypoints_return_errors_without_raising(self) -> None:
+        for parser in (
+            parse_ping_compat,
+            parse_interface_compat,
+            parse_route_compat,
+        ):
+            result = parser("unexpected output", "R1")
+            self.assertFalse(result["success"])
+            self.assertEqual(result["facts"], {})
+            self.assertIsInstance(result["error"], str)
+
+        arp = parse_arp_compat("unexpected output", "R1", target_ip="10.0.0.2")
+        self.assertFalse(arp["success"])
+        self.assertEqual(arp["facts"], {})
+
+        tracert = parse_tracert_compat("unexpected output", "R1")
+        self.assertFalse(tracert["success"])
+        self.assertEqual(tracert["facts"], {})
+        self.assertIn("recognizable hops", tracert["error"])
+
+    def test_compatibility_ping_empty_output_returns_error(self) -> None:
+        result = parse_ping_compat("", "R1")
+        self.assertFalse(result["success"])
+        self.assertEqual(result["facts"], {})
+        self.assertIsInstance(result["error"], str)
 
 
 if __name__ == "__main__":

@@ -4,11 +4,13 @@
 
 ### PING
 - reachable (true/false)
-- packet_loss_percent (数值)
+- packet_loss (数值，0-100)
 
 ### TRACERT
-- last_reachable_hop (设备名或IP)
-- timeout_hop (超时跳数)
+- hops (逐跳 IP/超时记录)
+- last_reachable_ip (最后一个可达 IP)
+- last_reachable_device (通过 IP 映射得到的设备名，可选)
+- suspect_device (疑似故障设备，可选)
 
 ### DISPLAY_ROUTE
 - route_found (true/false)
@@ -28,7 +30,7 @@
     "vendor": "huawei_vrp",
     "command_type": "命令类型",
     "facts": { 提取的核心字段 },
-    "error": null 或 { "error_type": "错误代码" }
+    "error": null 或错误字符串
 }
 
 ## 错误类型

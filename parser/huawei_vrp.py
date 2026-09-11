@@ -11,6 +11,7 @@ ACTION_TO_COMMAND_TYPE = {
     "CHECK_INTERFACE": "DISPLAY_INTERFACE",
     "CHECK_ARP": "DISPLAY_ARP",
 }
+SUPPORTED_VENDORS = {"huawei_vrp"}
 
 
 def normalize_interface(name: str) -> str:
@@ -40,6 +41,9 @@ def parse_tracert(text: str, context: dict[str, Any]) -> dict[str, Any]:
         remainder = match.group(2)
         ip_match = re.search(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", remainder)
         hops.append({"hop": hop, "ip": ip_match.group(0) if ip_match else None})
+
+    if not hops:
+        raise ValueError("tracert output does not contain recognizable hops")
 
     reachable_hops = [hop for hop in hops if hop["ip"]]
     if not reachable_hops:
@@ -125,6 +129,15 @@ def parse_cli_output(
 ) -> dict[str, Any]:
     parser = PARSERS.get(command_type)
     canonical_type = ACTION_TO_COMMAND_TYPE.get(command_type, command_type)
+    if vendor not in SUPPORTED_VENDORS:
+        return {
+            "success": False,
+            "device": device,
+            "vendor": vendor,
+            "command_type": canonical_type,
+            "facts": {},
+            "error": f"Unsupported vendor: {vendor}",
+        }
     if parser is None:
         return {
             "success": False,
@@ -133,6 +146,16 @@ def parse_cli_output(
             "command_type": canonical_type,
             "facts": {},
             "error": f"Unsupported command type: {command_type}",
+        }
+
+    if not text or not text.strip():
+        return {
+            "success": False,
+            "device": device,
+            "vendor": vendor,
+            "command_type": canonical_type,
+            "facts": {},
+            "error": "EMPTY_OUTPUT",
         }
 
     try:
