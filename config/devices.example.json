@@ -1,0 +1,26 @@
+{
+  "default_device": "R1",
+  "devices": {
+    "R1": {
+      "host": "192.168.56.101",
+      "port": 22,
+      "username": "netpath",
+      "password_env": "ENSP_R1_PASSWORD",
+      "device_type": "huawei"
+    },
+    "R2": {
+      "host": "192.168.56.102",
+      "port": 22,
+      "username": "netpath",
+      "password_env": "ENSP_R2_PASSWORD",
+      "device_type": "huawei"
+    },
+    "R3": {
+      "host": "192.168.56.103",
+      "port": 22,
+      "username": "netpath",
+      "password_env": "ENSP_R3_PASSWORD",
+      "device_type": "huawei"
+    }
+  }
+}

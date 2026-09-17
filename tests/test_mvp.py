@@ -103,6 +103,55 @@ class MvpFlowTests(unittest.TestCase):
         self.assertTrue(result["facts"]["reachable"])
         self.assertEqual(transport.calls, [(None, "ping 192.168.3.10")])
 
+    def test_live_executor_uses_source_device_for_path_checks(self) -> None:
+        catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
+
+        class FakeTransport:
+            def __init__(self) -> None:
+                self.calls = []
+
+            def send(self, device: str | None, command: str | None) -> str:
+                self.calls.append((device, command))
+                return "5 packet(s) transmitted\n0 packet(s) received\n100.00% packet loss"
+
+        transport = FakeTransport()
+        executor = LiveExecutor(
+            {"vendor": "huawei_vrp", "source_device": "R1"},
+            catalog,
+            transport,
+        )
+        result = executor.execute(
+            AgentAction(action="RUN_PING", parameters={"target_ip": "192.168.3.10"})
+        )
+
+        self.assertTrue(result["success"])
+        self.assertEqual(result["device"], "R1")
+        self.assertEqual(transport.calls, [("R1", "ping 192.168.3.10")])
+
+    def test_live_executor_maps_tracert_ip_to_device(self) -> None:
+        catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
+
+        class FakeTransport:
+            def send(self, device: str | None, command: str | None) -> str:
+                return "1  10.0.12.2  5 ms  4 ms  5 ms\n2  *  *  *"
+
+        executor = LiveExecutor(
+            {
+                "vendor": "huawei_vrp",
+                "source_device": "R1",
+                "ip_to_device": {"10.0.12.2": "R2"},
+            },
+            catalog,
+            FakeTransport(),
+        )
+        result = executor.execute(
+            AgentAction(action="RUN_TRACERT", parameters={"target_ip": "192.168.3.10"})
+        )
+
+        self.assertTrue(result["success"])
+        self.assertEqual(result["facts"]["last_reachable_device"], "R2")
+        self.assertEqual(result["facts"]["suspect_device"], "R2")
+
 
 if __name__ == "__main__":
     unittest.main()
