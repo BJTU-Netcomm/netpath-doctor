@@ -1,0 +1,49 @@
+[V200R003C00]
+
+#
+sysname R1
+#
+
+#
+aaa
+ authentication-scheme default
+ authorization-scheme default
+ accounting-scheme default
+ domain default
+ domain default_admin
+ local-user admin password cipher <PASSWORD_REMOVED>
+ local-user admin service-type ssh
+#
+
+#
+interface GigabitEthernet0/0/0
+ ip address 10.0.12.1 255.255.255.0
+#
+
+#
+interface GigabitEthernet0/0/1
+#
+
+#
+interface GigabitEthernet0/0/2
+#
+
+#
+interface NULL0
+#
+
+#
+ip route-static 192.168.3.0 255.255.255.0 10.0.12.2
+#
+
+#
+user-interface con 0
+ authentication-mode password
+#
+
+#
+user-interface vty 0 4
+#
+
+#
+return
