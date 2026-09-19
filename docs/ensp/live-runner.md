@@ -65,3 +65,43 @@ sanitized before adding a Parser fixture to Git.
 `RUN_PING` and `RUN_TRACERT` execute on `source_device`. Later actions execute on
 the device selected by the Agent. The `ip_to_device` mapping must include every
 router address that can appear as the final reachable tracert hop.
+
+## Run the complete live benchmark
+
+After preflight succeeds and normal R1-to-R3 connectivity has been checked, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m benchmarks.live_experiment `
+  scenarios/live/case_001_interface_down.local.json
+```
+
+The command runs three trials by default. Each trial performs this sequence:
+
+1. verify that R1 can ping the destination before changing the topology;
+2. configure `shutdown` on R2 `GigabitEthernet0/0/1`;
+3. run the read-only diagnosis Agent;
+4. configure `undo shutdown` in a `finally` recovery path;
+5. verify that R1 can ping the destination again.
+
+The Agent remains read-only. Only the outer experiment controller calls the
+configuration transport. The benchmark passes only when all three trials return
+`INTERFACE_DOWN` with the expected device and interface, and connectivity is
+restored after every trial.
+
+The summary is written to `reports/live/experiment_latest.json`. Raw diagnosis
+and configuration output is kept in `reports/live/experiment_raw/`. Both paths
+are ignored by Git because the output may contain local device details.
+
+If a run is interrupted, check R2 from the eNSP console before continuing:
+
+```text
+display interface GigabitEthernet0/0/1
+```
+
+If necessary, recover it manually:
+
+```text
+system-view
+interface GigabitEthernet0/0/1
+undo shutdown
+```

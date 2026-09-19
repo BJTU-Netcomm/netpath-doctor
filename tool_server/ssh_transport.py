@@ -83,6 +83,28 @@ class SSHTransport:
         self._capture(device_name, command, output)
         return output
 
+    def send_config(self, device: str, commands: list[str]) -> str:
+        """Send experiment-control commands outside the read-only Agent path."""
+        if not commands or any(not command.strip() for command in commands):
+            raise ValueError("SSH configuration command list must not be empty")
+
+        device_name = self.resolve_device(device)
+        connection = self._connect(device_name)
+        try:
+            output = connection.send_config_set(
+                commands,
+                read_timeout=self.command_timeout,
+                strip_prompt=False,
+                strip_command=False,
+            )
+        finally:
+            connection.disconnect()
+
+        if not isinstance(output, str):
+            raise TypeError("SSH client returned a non-text configuration result")
+        self._capture(device_name, " ; ".join(commands), output)
+        return output
+
     def _validate_inventory(self) -> None:
         if not self.devices:
             raise SSHConfigurationError("Device inventory is empty")

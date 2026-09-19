@@ -12,6 +12,7 @@ class FakeConnection:
     def __init__(self, output: str) -> None:
         self.output = output
         self.calls: list[tuple[str, float, bool, bool]] = []
+        self.config_calls: list[list[str]] = []
         self.disconnected = False
 
     def send_command(
@@ -27,6 +28,10 @@ class FakeConnection:
 
     def disconnect(self) -> None:
         self.disconnected = True
+
+    def send_config_set(self, commands, **kwargs) -> str:
+        self.config_calls.append(list(commands))
+        return "configuration accepted"
 
 
 class SSHTransportTests(unittest.TestCase):
@@ -83,6 +88,26 @@ class SSHTransportTests(unittest.TestCase):
 
         self.assertEqual(connect_calls[0]["host"], "192.0.2.2")
         self.assertEqual(connect_calls[0]["password"], "r2-secret")
+
+    def test_configuration_commands_use_separate_transport_method(self) -> None:
+        fake_connection = FakeConnection("unused")
+        transport = SSHTransport(
+            self.inventory,
+            default_device="R1",
+            connector=lambda **_: fake_connection,
+            environ={"TEST_R2_PASSWORD": "r2-secret"},
+        )
+
+        output = transport.send_config(
+            "R2", ["interface GigabitEthernet0/0/1", "shutdown"]
+        )
+
+        self.assertEqual(output, "configuration accepted")
+        self.assertEqual(
+            fake_connection.config_calls,
+            [["interface GigabitEthernet0/0/1", "shutdown"]],
+        )
+        self.assertTrue(fake_connection.disconnected)
 
     def test_plaintext_password_is_rejected(self) -> None:
         inventory = {

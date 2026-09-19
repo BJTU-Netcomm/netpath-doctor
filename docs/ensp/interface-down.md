@@ -150,7 +150,8 @@ R1 should be able to reach:
 
 This scenario verifies that NetPath-Doctor can:
 
-1. execute fault injection commands;
-2. collect Huawei VRP CLI outputs;
-3. identify interface failures;
-4. restore network connectivity after recovery.
+1. use the experiment controller to inject and recover the fault;
+2. keep the diagnosis Agent limited to read-only commands;
+3. collect Huawei VRP CLI outputs;
+4. identify interface failures;
+5. restore network connectivity after recovery.

@@ -18,6 +18,19 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def diagnose_live_scenario(
+    scenario: dict[str, Any],
+    transport: SSHTransport,
+) -> dict[str, Any]:
+    scenario = dict(scenario)
+    scenario.pop("ground_truth", None)
+    scenario.pop("experiment_control", None)
+    scenario.setdefault("source_device", transport.default_device)
+    action_catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
+    executor = LiveExecutor(scenario, action_catalog, transport)
+    return DiagnosisStateMachine().run(scenario, executor)
+
+
 def run_live_case(
     scenario_path: str | Path,
     device_config_path: str | Path,
@@ -25,15 +38,11 @@ def run_live_case(
     raw_output_dir: str | Path | None = None,
 ) -> dict[str, Any]:
     scenario = _read_json(Path(scenario_path))
-    scenario.pop("ground_truth", None)
     transport = SSHTransport.from_json(
         device_config_path,
         capture_dir=raw_output_dir,
     )
-    scenario.setdefault("source_device", transport.default_device)
-    action_catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
-    executor = LiveExecutor(scenario, action_catalog, transport)
-    return DiagnosisStateMachine().run(scenario, executor)
+    return diagnose_live_scenario(scenario, transport)
 
 
 def main() -> int:

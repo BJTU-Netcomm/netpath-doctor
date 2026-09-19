@@ -7,4 +7,6 @@ reports/live/latest.json
 reports/live/preflight_latest.json
 reports/live/raw/
 reports/live/preflight_raw/
+reports/live/experiment_latest.json
+reports/live/experiment_raw/
 scenarios/live/*.local.json

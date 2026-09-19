@@ -3,10 +3,14 @@
   "title": "eNSP R2 to R3 interface down",
   "topology_id": "ENSP_TOPOLOGY_001",
   "source_device": "R1",
-  "source_ip": "192.168.1.1",
+  "source_ip": "10.0.12.1",
   "destination_ip": "192.168.3.1",
   "destination_network": "192.168.3.0/24",
   "vendor": "huawei_vrp",
+  "experiment_control": {
+    "fault_device": "R2",
+    "fault_interface": "GigabitEthernet0/0/1"
+  },
   "ip_to_device": {
     "10.0.12.1": "R1",
     "10.0.12.2": "R2",
