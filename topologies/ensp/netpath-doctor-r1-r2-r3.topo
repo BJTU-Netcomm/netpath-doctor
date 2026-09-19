@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<topo version="1.2.00.390">
+    <devices>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301501" name="R1" model="AR2220" settings="" com_port="2000" bootmode="1" cx="260.000000" cy="340.000000" edit_left="289" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301502" name="R2" model="AR2220" settings="" com_port="2001" bootmode="1" cx="500.000000" cy="340.000000" edit_left="529" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301503" name="R3" model="AR2220" settings="" com_port="2002" bootmode="1" cx="740.000000" cy="340.000000" edit_left="769" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301504" name="MGMT_CLOUD" poe="0" model="Cloud" settings="" system_mac="" com_port="0" bootmode="0" cx="500.000000" cy="610.000000" edit_left="543" edit_top="695">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="Ethernet" count="4" />
+                <interface sztype="Ethernet" interfacename="GE" count="0" />
+                <interface sztype="Serial" interfacename="Serial" count="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="1" remoteDisplayNo="2" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="1" remoteDisplayNo="3" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="1" remoteDisplayNo="4" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="2" remoteDisplayNo="1" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="2" remoteDisplayNo="3" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="2" remoteDisplayNo="4" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="3" remoteDisplayNo="1" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="3" remoteDisplayNo="2" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="3" remoteDisplayNo="4" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="4" remoteDisplayNo="1" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="4" remoteDisplayNo="2" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+                <interfaceMap sztype="Ethernet" interfacename="Ethernet" displayNo="4" remoteDisplayNo="3" adapterUid="" isOpen="0" udpPort="0" peerIPAdd="0.0.0.0" peerIP="0" peerPort="0" />
+            </slot>
+        </dev>
+    </devices>
+    <lines>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301501" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301502">
+            <interfacePair lineName="Copper" srcIndex="0" srcBoundRectIsMoved="0" srcBoundRect_X="330.000000" srcBoundRect_Y="367.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="0" tarBoundRectIsMoved="0" tarBoundRect_X="484.000000" tarBoundRect_Y="367.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301502" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301503">
+            <interfacePair lineName="Copper" srcIndex="1" srcBoundRectIsMoved="0" srcBoundRect_X="570.000000" srcBoundRect_Y="367.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="0" tarBoundRectIsMoved="0" tarBoundRect_X="724.000000" tarBoundRect_Y="367.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301501" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301504">
+            <interfacePair lineName="Copper" srcIndex="2" srcBoundRectIsMoved="0" srcBoundRect_X="287.000000" srcBoundRect_Y="394.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="0" tarBoundRectIsMoved="0" tarBoundRect_X="457.000000" tarBoundRect_Y="610.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301502" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301504">
+            <interfacePair lineName="Copper" srcIndex="2" srcBoundRectIsMoved="0" srcBoundRect_X="527.000000" srcBoundRect_Y="394.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="1" tarBoundRectIsMoved="0" tarBoundRect_X="500.000000" tarBoundRect_Y="583.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301503" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301504">
+            <interfacePair lineName="Copper" srcIndex="2" srcBoundRectIsMoved="0" srcBoundRect_X="767.000000" srcBoundRect_Y="394.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="2" tarBoundRectIsMoved="0" tarBoundRect_X="543.000000" tarBoundRect_Y="610.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+    </lines>
+    <shapes />
+    <txttips>
+        <txttip left="340" top="320" right="430" bottom="337" content="10.0.12.0/24" fontname="Consolas" fontstyle="0" editsize="100" txtcolor="-16777216" txtbkcolor="-7278960" charset="1" />
+        <txttip left="580" top="320" right="670" bottom="337" content="10.0.23.0/24" fontname="Consolas" fontstyle="0" editsize="100" txtcolor="-16777216" txtbkcolor="-7278960" charset="1" />
+        <txttip left="420" top="690" right="590" bottom="707" content="192.168.56.0/24 management" fontname="Consolas" fontstyle="0" editsize="100" txtcolor="-16777216" txtbkcolor="-7278960" charset="1" />
+    </txttips>
+</topo>

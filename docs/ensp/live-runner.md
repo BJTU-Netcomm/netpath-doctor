@@ -28,6 +28,19 @@ uv venv --python 3.12
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
+## Check all SSH connections
+
+Before running the Agent, verify that all three routers accept SSH and return a
+read-only command result:
+
+```powershell
+.\.venv\Scripts\python.exe -m benchmarks.live_preflight
+```
+
+The command writes `reports/live/preflight_latest.json` and exits with code `0`
+only when every configured device is reachable. Raw `display version` output is
+kept under `reports/live/preflight_raw/` for troubleshooting.
+
 ## Run one diagnosis
 
 Copy the scenario template and replace its addresses with the real topology values:

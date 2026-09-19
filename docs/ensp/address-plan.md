@@ -14,6 +14,14 @@ This document describes the IP address allocation of the eNSP experimental topol
 | R2 | GigabitEthernet0/0/1 | 10.0.23.1/24 | 10.0.23.0/24 | Link to R3 |
 | R3 | GigabitEthernet0/0/0 | 10.0.23.2/24 | 10.0.23.0/24 | Link to R2 |
 | R3 | LoopBack0 | 192.168.3.1/24 | 192.168.3.0/24 | Test Destination |
+| R1 | GigabitEthernet0/0/2 | 192.168.56.101/24 | 192.168.56.0/24 | SSH management |
+| R2 | GigabitEthernet0/0/2 | 192.168.56.102/24 | 192.168.56.0/24 | SSH management |
+| R3 | GigabitEthernet0/0/2 | 192.168.56.103/24 | 192.168.56.0/24 | SSH management |
+
+The three management interfaces connect to one eNSP Cloud bound to the
+VirtualBox Host-Only adapter. The host adapter uses `192.168.56.1/24`. Verify
+that this subnet does not conflict with another local adapter before applying
+the example.
 
 
 ## 3. Routing Information

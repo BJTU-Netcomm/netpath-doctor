@@ -11,8 +11,9 @@ aaa
  accounting-scheme default
  domain default
  domain default_admin
- local-user admin password cipher <PASSWORD_REMOVED>
- local-user admin service-type ssh
+ local-user netpath password cipher <PASSWORD_REMOVED>
+ local-user netpath privilege level 3
+ local-user netpath service-type ssh
 #
 
 #
@@ -26,6 +27,8 @@ interface GigabitEthernet0/0/1
 
 #
 interface GigabitEthernet0/0/2
+ description Management_to_eNSP_Cloud
+ ip address 192.168.56.103 255.255.255.0
 #
 
 #
@@ -48,6 +51,17 @@ user-interface con 0
 
 #
 user-interface vty 0 4
+ authentication-mode aaa
+ protocol inbound ssh
+#
+
+#
+stelnet server enable
+#
+
+#
+ssh user netpath authentication-type password
+ssh user netpath service-type stelnet
 #
 
 #

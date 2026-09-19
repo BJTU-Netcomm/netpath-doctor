@@ -6,9 +6,21 @@ This document describes the eNSP experimental topology used by NetPath-Doctor.
 
 The topology contains three Huawei AR2220 routers.
 
-Network topology:
+A ready-to-import template is committed at
+`topologies/ensp/netpath-doctor-r1-r2-r3.topo`. After opening it for the first
+time, edit `MGMT_CLOUD` and bind its unused Ethernet port to the local
+`VirtualBox Host-Only Network` adapter. Adapter identifiers are machine-local,
+so that binding is intentionally not stored in the shared template.
+
+Business topology:
 
 R1 -------- R2 -------- R3
+
+Management topology:
+
+R1 GE0/0/2 ----+
+R2 GE0/0/2 ----+---- eNSP Cloud ---- VirtualBox Host-Only adapter
+R3 GE0/0/2 ----+
 
 The purpose of this topology is to verify:
 
@@ -17,6 +29,9 @@ The purpose of this topology is to verify:
 - interface failure diagnosis
 - real Huawei VRP CLI output parsing
 - SSH based device control
+
+The management network is separate from the diagnosed business path. This
+keeps SSH available when the R2-to-R3 business interface is shut down.
 
 
 ## 2. Device Information

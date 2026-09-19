@@ -3,5 +3,8 @@
 __pycache__/
 *.pyc
 config/devices.local.json
+reports/live/latest.json
+reports/live/preflight_latest.json
 reports/live/raw/
+reports/live/preflight_raw/
 scenarios/live/*.local.json

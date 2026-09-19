@@ -24,6 +24,7 @@ Each router should provide:
 - local user authentication
 - management IP address
 - SSH login access
+- an RSA local key pair created on the running device
 
 
 ## 4. SSH Configuration
@@ -44,6 +45,16 @@ authentication-mode aaa
 
 protocol inbound ssh
 
+Create the RSA local key pair interactively before testing SSH:
+
+rsa local-key-pair create
+
+The exact password and SSH-user commands vary between VRP releases. Apply them
+in the device console, verify there are no CLI errors, and use `display
+current-configuration` to confirm the resulting configuration. The committed
+`.cfg.example` files are sanitized references rather than scripts to paste
+without review.
+
 
 ## 5. Connection Information
 
@@ -52,33 +63,15 @@ The device address, username and password should be stored locally.
 Do not commit passwords or private configuration files to Git.
 
 
-Example:
+Example management addresses:
 
-Device:
+- R1: `192.168.56.101`
+- R2: `192.168.56.102`
+- R3: `192.168.56.103`
 
-R1
-
-Management IP:
-
-10.0.12.1
-
-
-Device:
-
-R2
-
-Management IP:
-
-10.0.12.2
-
-
-Device:
-
-R3
-
-Management IP:
-
-10.0.23.2
+These addresses match `config/devices.example.json`. They require all three
+`GigabitEthernet0/0/2` interfaces to connect to one eNSP Cloud bound to the
+VirtualBox Host-Only adapter.
 
 
 ## 6. Security Notes

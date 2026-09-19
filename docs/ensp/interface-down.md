@@ -119,6 +119,13 @@ Expected fault evidence:
 - connectivity test fails
 - route path is interrupted
 
+Record the exact output of `display ip routing-table 192.168.3.1` after the
+shutdown. Some VRP versions remove a static route from the active routing table
+when its outgoing interface goes down. In that case the current Agent may
+classify the symptom as `ROUTE_MISSING` before it checks the interface. Treat
+this as a state-machine compatibility issue to fix from the captured evidence;
+do not count the run as a successful `INTERFACE_DOWN` benchmark.
+
 
 ## 7. Fault Recovery
 
