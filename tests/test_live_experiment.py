@@ -21,6 +21,12 @@ class FakeExperimentTransport:
 
     def send(self, device: str | None, command: str | None) -> str:
         self.calls.append(("send", str(device), command))
+        if command and command.startswith("display ip routing-table"):
+            return (
+                "Route Flags: R - relay, D - download to fib\n"
+                "Summary Count : 1\n"
+                "    192.168.3.0/24  Static  60  0 RD  10.0.23.2 GigabitEthernet0/0/1"
+            )
         return PING_UP if self.link_up else PING_DOWN
 
     def send_config(self, device: str, commands: list[str]) -> str:

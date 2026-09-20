@@ -17,6 +17,17 @@ class CommandMapperTests(unittest.TestCase):
     def setUp(self) -> None:
         self.catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
 
+    def test_render_huawei_tracert_is_bounded_for_live_failures(self) -> None:
+        action = AgentAction(
+            action="RUN_TRACERT",
+            parameters={"target_ip": "192.0.2.10"},
+            reason="测试命令映射",
+        )
+        self.assertEqual(
+            render_command(action, self.catalog),
+            "tracert -m 3 -q 1 -w 1000 192.0.2.10",
+        )
+
     def test_render_huawei_route_command(self) -> None:
         action = AgentAction(
             action="CHECK_ROUTE",
@@ -77,10 +88,98 @@ class MvpFlowTests(unittest.TestCase):
 
         self.assertEqual(result["diagnosis_status"], "NEED_MORE_DATA")
         self.assertEqual(result["missing_fields"], ["ping_facts"])
+
+    def test_all_star_tracert_uses_source_route_to_locate_suspect(self) -> None:
+        scenario = {
+            "case_id": "LIVE_CASE_001",
+            "source_device": "R1",
+            "destination_ip": "192.168.3.1",
+            "vendor": "huawei_vrp",
+            "ip_to_device": {"10.0.12.2": "R2"},
+            "mock_outputs": {
+                "RUN_PING": {"reachable": False, "packet_loss": 100},
+                "RUN_TRACERT": {"hops": [{"hop": 1, "ip": None}]},
+                "CHECK_ROUTE": {
+                    "R1": {
+                        "route_found": True,
+                        "next_hop": "10.0.12.2",
+                        "out_interface": "GigabitEthernet0/0/0",
+                    },
+                    "R2": {
+                        "route_found": True,
+                        "next_hop": "10.0.23.2",
+                        "out_interface": "GigabitEthernet0/0/1",
+                    },
+                },
+                "CHECK_INTERFACE": {
+                    "R2:GigabitEthernet0/0/1": {
+                        "physical_status": "DOWN",
+                        "protocol_status": "DOWN",
+                    }
+                },
+            },
+        }
+        catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")
+        result = DiagnosisStateMachine().run(scenario, MockExecutor(scenario, catalog))
+
+        self.assertEqual(result["diagnosis_status"], "COMPLETED")
+        self.assertEqual(result["fault_device"], "R2")
+        self.assertEqual(result["fault_type"], "INTERFACE_DOWN")
         self.assertEqual(
             [step["action"] for step in result["action_trace"]],
-            ["RUN_PING", "REQUEST_MORE_DATA"],
+            [
+                "RUN_PING",
+                "RUN_TRACERT",
+                "CHECK_ROUTE",
+                "CHECK_ROUTE",
+                "CHECK_INTERFACE",
+                "FINISH_DIAGNOSIS",
+            ],
         )
+
+    def test_failed_fault_device_route_uses_this_trial_baseline_route(self) -> None:
+        class RouteFailureExecutor:
+            def execute(self, action: AgentAction) -> dict:
+                if action.action == "RUN_PING":
+                    return {"success": True, "facts": {"reachable": False, "packet_loss": 100}}
+                if action.action == "RUN_TRACERT":
+                    return {"success": True, "facts": {"hops": [{"hop": 1, "ip": None}]}}
+                if action.action == "CHECK_ROUTE" and action.target_device == "R1":
+                    return {
+                        "success": True,
+                        "facts": {
+                            "route_found": True,
+                            "next_hop": "10.0.12.2",
+                            "out_interface": "GigabitEthernet0/0/0",
+                        },
+                    }
+                if action.action == "CHECK_ROUTE":
+                    return {"success": False, "facts": {}, "error": "EMPTY_OUTPUT"}
+                if action.action == "CHECK_INTERFACE":
+                    return {
+                        "success": True,
+                        "facts": {"physical_status": "DOWN", "protocol_status": "DOWN"},
+                    }
+                return {"success": False, "facts": {}}
+
+        scenario = {
+            "case_id": "LIVE_CASE_001",
+            "source_device": "R1",
+            "destination_ip": "192.168.3.1",
+            "ip_to_device": {"10.0.12.2": "R2"},
+            "baseline_route_facts": {
+                "R2": {
+                    "route_found": True,
+                    "next_hop": "10.0.23.2",
+                    "out_interface": "GigabitEthernet0/0/1",
+                }
+            },
+        }
+        result = DiagnosisStateMachine().run(scenario, RouteFailureExecutor())
+
+        self.assertEqual(result["diagnosis_status"], "COMPLETED")
+        self.assertEqual(result["fault_device"], "R2")
+        self.assertEqual(result["fault_interface"], "GigabitEthernet0/0/1")
 
     def test_live_executor_sends_command_and_parses_reply(self) -> None:
         catalog = load_action_catalog(REPO_ROOT / "rules" / "action_catalog.json")

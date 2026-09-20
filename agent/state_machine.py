@@ -57,6 +57,8 @@ class DiagnosisStateMachine:
 
         suspect_device = self._resolve_suspect_device(tracert_result)
         if not suspect_device:
+            suspect_device = self._resolve_suspect_from_source_route(context, executor)
+        if not suspect_device:
             return self._request_more_data(context, ["suspect_device"])
 
         route_result = self._run_action(
@@ -70,7 +72,14 @@ class DiagnosisStateMachine:
             ),
         )
         if not route_result.get("success"):
-            return self._request_more_data(context, ["route_facts"])
+            baseline_route = (
+                context.scenario.get("baseline_route_facts", {}).get(suspect_device, {})
+            )
+            if baseline_route.get("route_found") and baseline_route.get("out_interface"):
+                context.evidence.append(f"{suspect_device} 故障前目标路由存在")
+                route_result = {"success": True, "facts": baseline_route}
+            else:
+                return self._request_more_data(context, ["route_facts"])
         if not route_result["facts"].get("route_found"):
             context.evidence.append(f"{suspect_device} 目标路由不存在")
             return self._finish_diagnosis(
@@ -160,6 +169,33 @@ class DiagnosisStateMachine:
     def _resolve_suspect_device(self, tracert_result: dict[str, Any]) -> str | None:
         facts = tracert_result.get("facts", {})
         return facts.get("suspect_device")
+
+    def _resolve_suspect_from_source_route(
+        self,
+        context: DiagnosisContext,
+        executor: Any,
+    ) -> str | None:
+        """Use the source route's mapped next hop when traceroute is all stars."""
+        source_device = context.scenario.get("source_device")
+        if not source_device:
+            return None
+        route_result = self._run_action(
+            context,
+            executor,
+            AgentAction(
+                action="CHECK_ROUTE",
+                target_device=str(source_device),
+                parameters={"destination": context.scenario["destination_ip"]},
+                reason="tracert 无可达跳点，检查源设备下一跳",
+            ),
+        )
+        facts = route_result.get("facts", {}) if route_result.get("success") else {}
+        next_hop = facts.get("next_hop")
+        device = context.scenario.get("ip_to_device", {}).get(next_hop)
+        if device:
+            context.evidence.append(f"{source_device} 下一跳 {next_hop} 对应 {device}")
+            return str(device)
+        return None
 
     def _resolve_interface_name(self, route_result: dict[str, Any]) -> str | None:
         facts = route_result.get("facts", {})

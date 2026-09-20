@@ -8,6 +8,7 @@ from typing import Any, Callable, Protocol
 
 from benchmarks.live_runner import diagnose_live_scenario
 from parser.huawei_vrp import parse_cli_output
+from tool_server.ensp_console_transport import ENSPConsoleTransport
 from tool_server.ssh_transport import SSHTransport
 
 
@@ -25,9 +26,26 @@ class ExperimentTransport(Protocol):
         ...
 
 
+def _recover_interface(
+    transport: ExperimentTransport,
+    device: str,
+    interface: str,
+) -> dict[str, Any]:
+    """Recover a live interface and use transport-specific verification when available."""
+    recover = getattr(transport, "recover_interface", None)
+    if callable(recover):
+        return recover(device, interface)
+    return _apply_interface_state(transport, device, interface, "undo shutdown")
+
+
 def _ping(transport: ExperimentTransport, device: str, target_ip: str) -> dict[str, Any]:
     raw_output = transport.send(device, f"ping {target_ip}")
     return parse_cli_output("PING", raw_output, device=device)
+
+
+def _route(transport: ExperimentTransport, device: str, target_ip: str) -> dict[str, Any]:
+    raw_output = transport.send(device, f"display ip routing-table {target_ip}")
+    return parse_cli_output("CHECK_ROUTE", raw_output, device=device)
 
 
 def _apply_interface_state(
@@ -63,6 +81,7 @@ def run_interface_down_trial(
         "fault_device": fault_device,
         "fault_interface": fault_interface,
         "baseline": None,
+        "pre_injection_route": None,
         "injection": None,
         "diagnosis": None,
         "recovery": None,
@@ -86,6 +105,23 @@ def run_interface_down_trial(
         return report
 
     try:
+        pre_injection_route = _route(transport, fault_device, target_ip)
+    except Exception as exc:
+        report["pre_injection_route"] = {
+            "success": False,
+            "facts": {},
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+        report["error"] = "Pre-injection route snapshot could not run; fault was not injected"
+        return report
+    report["pre_injection_route"] = pre_injection_route
+    if not pre_injection_route.get("success") or not pre_injection_route.get("facts", {}).get(
+        "route_found"
+    ):
+        report["error"] = "Pre-injection route snapshot failed; fault was not injected"
+        return report
+
+    try:
         injection = _apply_interface_state(
             transport, fault_device, fault_interface, "shutdown"
         )
@@ -93,13 +129,17 @@ def run_interface_down_trial(
         if not injection["success"]:
             report["error"] = "VRP rejected the fault injection command"
             return report
-        report["diagnosis"] = diagnose(scenario, transport)
+        diagnosis_scenario = dict(scenario)
+        diagnosis_scenario["baseline_route_facts"] = {
+            fault_device: dict(pre_injection_route["facts"])
+        }
+        report["diagnosis"] = diagnose(diagnosis_scenario, transport)
     except Exception as exc:
         report["error"] = f"{type(exc).__name__}: {exc}"
     finally:
         try:
-            report["recovery"] = _apply_interface_state(
-                transport, fault_device, fault_interface, "undo shutdown"
+            report["recovery"] = _recover_interface(
+                transport, fault_device, fault_interface
             )
         except Exception as exc:
             report["recovery"] = {
@@ -173,7 +213,13 @@ def main() -> int:
         "--devices",
         type=Path,
         default=REPO_ROOT / "config" / "devices.local.json",
-        help="Local SSH device inventory",
+        help="Local device inventory",
+    )
+    parser.add_argument(
+        "--transport",
+        choices=("ssh", "ensp-console"),
+        default="ssh",
+        help="CLI transport used to reach the running devices",
     )
     parser.add_argument("--fault-device")
     parser.add_argument("--fault-interface")
@@ -198,7 +244,11 @@ def main() -> int:
         parser.error(
             "fault device and interface are required in the scenario or command line"
         )
-    transport = SSHTransport.from_json(
+    transport_class = {
+        "ssh": SSHTransport,
+        "ensp-console": ENSPConsoleTransport,
+    }[args.transport]
+    transport = transport_class.from_json(
         args.devices,
         capture_dir=args.raw_output_dir,
     )

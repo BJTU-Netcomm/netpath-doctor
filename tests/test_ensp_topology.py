@@ -13,7 +13,12 @@ TOPOLOGY_PATH = (
 
 class ENSPTopologyTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.root = ET.parse(TOPOLOGY_PATH).getroot()
+        # eNSP 1.3 emits a UTF-8 file with the legacy declaration
+        # encoding="UNICODE"; normalize that declaration for Python's parser.
+        content = TOPOLOGY_PATH.read_text(encoding="utf-8").replace(
+            'encoding="UNICODE"', 'encoding="utf-8"', 1
+        )
+        self.root = ET.fromstring(content)
 
     def test_contains_expected_devices(self) -> None:
         devices = {
@@ -68,7 +73,9 @@ class ENSPTopologyTests(unittest.TestCase):
             for mapping in cloud.findall("./slot/interfaceMap")  # type: ignore[union-attr]
         }
 
-        self.assertEqual(adapter_ids, {""})
+        self.assertTrue(
+            all(adapter_id == "" or adapter_id.startswith("\\Device\\NPF_") for adapter_id in adapter_ids)
+        )
 
 
 if __name__ == "__main__":

@@ -3,15 +3,21 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from agent.command_mapper import load_action_catalog
 from agent.state_machine import DiagnosisStateMachine
 from tool_server.live_executor import LiveExecutor
-from tool_server.ssh_transport import SSHTransport
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+class LiveTransport(Protocol):
+    default_device: str
+
+    def send(self, device: str | None, command: str | None) -> str:
+        ...
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -20,7 +26,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def diagnose_live_scenario(
     scenario: dict[str, Any],
-    transport: SSHTransport,
+    transport: LiveTransport,
 ) -> dict[str, Any]:
     scenario = dict(scenario)
     scenario.pop("ground_truth", None)
@@ -36,12 +42,19 @@ def run_live_case(
     device_config_path: str | Path,
     *,
     raw_output_dir: str | Path | None = None,
+    transport_kind: str = "ssh",
 ) -> dict[str, Any]:
+    from tool_server.ensp_console_transport import ENSPConsoleTransport
+    from tool_server.ssh_transport import SSHTransport
+
+    transport_class = {
+        "ssh": SSHTransport,
+        "ensp-console": ENSPConsoleTransport,
+    }.get(transport_kind)
+    if transport_class is None:
+        raise ValueError(f"Unknown transport kind: {transport_kind}")
     scenario = _read_json(Path(scenario_path))
-    transport = SSHTransport.from_json(
-        device_config_path,
-        capture_dir=raw_output_dir,
-    )
+    transport = transport_class.from_json(device_config_path, capture_dir=raw_output_dir)
     return diagnose_live_scenario(scenario, transport)
 
 
@@ -50,12 +63,8 @@ def main() -> int:
         description="Run one NetPath-Doctor scenario against live eNSP devices"
     )
     parser.add_argument("scenario", type=Path, help="Live scenario JSON path")
-    parser.add_argument(
-        "--devices",
-        type=Path,
-        default=REPO_ROOT / "config" / "devices.local.json",
-        help="Local SSH device inventory",
-    )
+    parser.add_argument("--devices", type=Path, default=REPO_ROOT / "config" / "devices.local.json")
+    parser.add_argument("--transport", choices=("ssh", "ensp-console"), default="ssh")
     parser.add_argument(
         "--output",
         type=Path,
@@ -74,6 +83,7 @@ def main() -> int:
         args.scenario,
         args.devices,
         raw_output_dir=args.raw_output_dir,
+        transport_kind=args.transport,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(

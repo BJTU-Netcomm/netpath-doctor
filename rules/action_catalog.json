@@ -14,7 +14,7 @@
       "required_parameters": [
         "target_ip"
       ],
-      "command_template": "tracert {target_ip}",
+      "command_template": "tracert -m 3 -q 1 -w 1000 {target_ip}",
       "read_only": true
     },
 

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding="UNICODE"?>
+<topo version="1.3.00.100">
+    <devices>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301503" name="R3" poe="0" model="AR2220" settings="" system_mac="00-E0-FC-35-3C-4C" com_port="2002" bootmode="1" cx="740.000000" cy="340.000000" edit_left="769" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301502" name="R2" poe="0" model="AR2220" settings="" system_mac="00-E0-FC-37-26-51" com_port="2001" bootmode="1" cx="500.000000" cy="340.000000" edit_left="529" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+        <dev id="81D98E98-E4D9-4A7D-AE59-37BF55301501" name="R1" poe="0" model="AR2220" settings="" system_mac="00-E0-FC-6B-06-11" com_port="2000" bootmode="1" cx="260.000000" cy="340.000000" edit_left="289" edit_top="394">
+            <slot number="slot17" isMainBoard="1">
+                <interface sztype="Ethernet" interfacename="GE" count="1" />
+                <interface sztype="Ethernet" interfacename="GE" count="2" />
+            </slot>
+        </dev>
+    </devices>
+    <lines>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301501" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301502">
+            <interfacePair lineName="Copper" srcIndex="0" srcBoundRectIsMoved="0" srcBoundRect_X="330.183777" srcBoundRect_Y="367.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="0" tarBoundRectIsMoved="0" tarBoundRect_X="483.816223" tarBoundRect_Y="367.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+        <line srcDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301502" destDeviceID="81D98E98-E4D9-4A7D-AE59-37BF55301503">
+            <interfacePair lineName="Copper" srcIndex="1" srcBoundRectIsMoved="0" srcBoundRect_X="570.183777" srcBoundRect_Y="367.000000" srcOffset_X="0.000000" srcOffset_Y="0.000000" tarIndex="0" tarBoundRectIsMoved="0" tarBoundRect_X="723.816223" tarBoundRect_Y="367.000000" tarOffset_X="0.000000" tarOffset_Y="0.000000" />
+        </line>
+    </lines>
+    <shapes />
+    <txttips>
+        <txttip left="340" top="320" right="435" bottom="337" content="10.0.12.0/24" fontname="Consolas" fontstyle="0" editsize="100" txtcolor="-16777216" txtbkcolor="-7278960" charset="1" />
+        <txttip left="580" top="320" right="675" bottom="337" content="10.0.23.0/24" fontname="Consolas" fontstyle="0" editsize="100" txtcolor="-16777216" txtbkcolor="-7278960" charset="1" />
+    </txttips>
+</topo>

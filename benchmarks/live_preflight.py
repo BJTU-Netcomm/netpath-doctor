@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
+from tool_server.ensp_console_transport import ENSPConsoleTransport
 from tool_server.ssh_transport import SSHTransport
 
 
@@ -12,8 +13,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_COMMAND = "display version"
 
 
+class PreflightTransport(Protocol):
+    devices: dict[str, dict[str, Any]]
+
+    def send(self, device: str | None, command: str | None) -> str:
+        ...
+
+
 def probe_transport(
-    transport: SSHTransport,
+    transport: PreflightTransport,
     *,
     command: str = DEFAULT_COMMAND,
 ) -> dict[str, Any]:
@@ -46,7 +54,7 @@ def probe_transport(
     reachable = sum(result["reachable"] for result in device_results)
     total = len(device_results)
     return {
-        "check": "eNSP SSH preflight",
+        "check": "eNSP CLI preflight",
         "command": command,
         "total": total,
         "reachable": reachable,
@@ -61,11 +69,15 @@ def run_preflight(
     *,
     command: str = DEFAULT_COMMAND,
     raw_output_dir: str | Path | None = None,
+    transport_kind: str = "ssh",
 ) -> dict[str, Any]:
-    transport = SSHTransport.from_json(
-        device_config_path,
-        capture_dir=raw_output_dir,
-    )
+    transport_class = {
+        "ssh": SSHTransport,
+        "ensp-console": ENSPConsoleTransport,
+    }.get(transport_kind)
+    if transport_class is None:
+        raise ValueError(f"Unknown transport kind: {transport_kind}")
+    transport = transport_class.from_json(device_config_path, capture_dir=raw_output_dir)
     return probe_transport(transport, command=command)
 
 
@@ -77,7 +89,13 @@ def main() -> int:
         "--devices",
         type=Path,
         default=REPO_ROOT / "config" / "devices.local.json",
-        help="Local SSH device inventory",
+        help="Local device inventory",
+    )
+    parser.add_argument(
+        "--transport",
+        choices=("ssh", "ensp-console"),
+        default="ssh",
+        help="CLI transport used to reach the running devices",
     )
     parser.add_argument(
         "--command",
@@ -102,6 +120,7 @@ def main() -> int:
         args.devices,
         command=args.command,
         raw_output_dir=args.raw_output_dir,
+        transport_kind=args.transport,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
