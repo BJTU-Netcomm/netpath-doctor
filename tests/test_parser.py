@@ -43,6 +43,14 @@ class HuaweiVrpParserTests(unittest.TestCase):
         self.assertEqual(facts["physical_status"], "DOWN")
         self.assertEqual(facts["protocol_status"], "DOWN")
 
+    def test_interface_accepts_administratively_down(self) -> None:
+        text = (
+            "GigabitEthernet0/0/1 current state : Administratively DOWN\n"
+            "Line protocol current state : DOWN"
+        )
+        facts = parse_interface(text, {})
+        self.assertEqual(facts["physical_status"], "DOWN")
+
     def test_arp_reports_target_entry(self) -> None:
         text = "192.168.3.10  00e0-fc00-0003  20  D-0  GE0/0/1"
         facts = parse_arp(text, {"target_ip": "192.168.3.10"})

@@ -82,7 +82,11 @@ def parse_route(text: str, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_interface(text: str, _: dict[str, Any]) -> dict[str, Any]:
-    physical = re.search(r"^\s*(\S+)\s+current state\s*:\s*(UP|DOWN)", text, flags=re.I | re.M)
+    physical = re.search(
+        r"^\s*(\S+)\s+current state\s*:\s*(?:Administratively\s+)?(UP|DOWN)",
+        text,
+        flags=re.I | re.M,
+    )
     protocol = re.search(r"^\s*Line protocol current state\s*:\s*(UP|DOWN)", text, flags=re.I | re.M)
     if not physical or not protocol:
         raise ValueError("interface output does not contain physical and protocol states")

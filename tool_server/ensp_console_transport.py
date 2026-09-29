@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 import socket
+import time
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
@@ -123,6 +124,7 @@ class ENSPConsoleTransport:
         interface: str,
         *,
         attempts: int = 3,
+        settle_seconds: float = 1.0,
     ) -> dict[str, Any]:
         """Restore an interface and prove that VRP reports it as up/up.
 
@@ -133,6 +135,8 @@ class ENSPConsoleTransport:
         """
         if attempts < 1:
             raise ValueError("attempts must be at least 1")
+        if settle_seconds < 0:
+            raise ValueError("settle_seconds must not be negative")
         device_name = self.resolve_device(device)
         commands = [f"interface {interface}", "undo shutdown"]
         errors: list[str] = []
@@ -144,6 +148,8 @@ class ENSPConsoleTransport:
                 errors.append(f"attempt {attempt}: {type(exc).__name__}: {exc}")
                 continue
 
+            if settle_seconds:
+                time.sleep(settle_seconds)
             verification = self.verify_interface(device_name, interface)
             if verification["success"]:
                 return {
@@ -262,6 +268,7 @@ class ENSPConsoleTransport:
 
     def _read_until_prompt(self, connection: socket.socket) -> str:
         chunks: list[bytes] = []
+        pages_advanced = 0
         while True:
             try:
                 chunk = connection.recv(65535)
@@ -272,6 +279,14 @@ class ENSPConsoleTransport:
             chunks.append(chunk)
             text = b"".join(chunks).decode("gb18030", errors="replace")
             normalized = text.replace("\x1b[H", "").replace("\x1b[J", "")
+            # Local eNSP consoles use the console line, where the VTY-only
+            # ``screen-length 0 temporary`` command is rejected.  Advance
+            # every pagination prompt instead of waiting for a final VRP
+            # prompt that cannot arrive until the page is acknowledged.
+            page_count = normalized.count("---- More ----")
+            while pages_advanced < page_count:
+                connection.sendall(b" ")
+                pages_advanced += 1
             if PROMPT_PATTERN.search(normalized):
                 return normalized
 

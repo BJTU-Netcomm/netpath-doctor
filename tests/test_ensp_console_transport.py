@@ -95,6 +95,28 @@ class ENSPConsoleTransportTests(unittest.TestCase):
             ],
         )
 
+    def test_command_advances_console_pagination(self) -> None:
+        sock = FakeSocket(
+            [
+                b"<R2>\r\n",
+                b"<R2>\r\n",
+                None,
+                b"display interface GigabitEthernet0/0/1\r\n"
+                b"GigabitEthernet0/0/1 current state : UP\r\n"
+                b"  ---- More ----",
+                b"\r\nLine protocol current state : UP\r\n<R2>\r\n",
+            ]
+        )
+        transport = ENSPConsoleTransport(
+            self.inventory, default_device="R1", socket_factory=lambda *_: sock
+        )
+
+        output = transport.send("R2", "display interface GigabitEthernet0/0/1")
+
+        self.assertIn("current state : UP", output)
+        self.assertIn("Line protocol current state : UP", output)
+        self.assertIn(b" ", sock.sent)
+
     def test_unknown_device_and_invalid_port_are_rejected(self) -> None:
         with self.assertRaisesRegex(ENSPConsoleConfigurationError, "Unknown device"):
             ENSPConsoleTransport(self.inventory, default_device="R1").resolve_device("R3")
