@@ -59,8 +59,12 @@ def parse_tracert(text: str, context: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_route(text: str, _: dict[str, Any]) -> dict[str, Any]:
-    summary_match = re.search(r"Summary Count\s*:\s*(\d+)", text, flags=re.IGNORECASE)
-    if summary_match and int(summary_match.group(1)) == 0:
+    count_match = re.search(
+        r"(?:Summary|Route)\s+Count\s*:\s*(\d+)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if count_match and int(count_match.group(1)) == 0:
         return {"route_found": False}
 
     route_pattern = re.compile(

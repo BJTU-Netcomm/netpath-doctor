@@ -19,6 +19,15 @@ class BenchmarkTests(unittest.TestCase):
         self.assertIn("entry_found=false", evidence)
         self.assertNotIn("next_hop_unreachable=true", evidence)
 
+    def test_fault_catalog_uses_v1_ping_fact_for_unreachable_cases(self) -> None:
+        catalog = json.loads(
+            (REPO_ROOT / "rules" / "fault_catalog.json").read_text(encoding="utf-8")
+        )
+        self.assertIn("reachable=false", catalog["INTERFACE_DOWN"]["required_evidence"])
+        self.assertIn("reachable=false", catalog["ROUTE_MISSING"]["required_evidence"])
+        self.assertNotIn("target_unreachable", catalog["INTERFACE_DOWN"]["required_evidence"])
+        self.assertNotIn("target_unreachable", catalog["ROUTE_MISSING"]["required_evidence"])
+
     def test_all_golden_cases_pass(self) -> None:
         report = run_benchmark(REPO_ROOT)
 

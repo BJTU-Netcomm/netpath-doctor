@@ -153,6 +153,13 @@ NEXT_HOP_UNREACHABLE   -> next_hop
 
 评测程序使用字符串包含匹配验证证据链。V1 不使用结构化证据对象；如果未来需要记录证据来源、设备、命令和原始 Facts，应在 V2 中新增版本化字段，不能直接改变 V1 的数组元素类型。
 
+`rules/fault_catalog.json` 中的 `required_evidence` 是规则层的事实谓词，使用
+Parser 的字段名表达，例如 `reachable=false`、`route_found=true`、
+`entry_found=false`。它与最终诊断 JSON 中面向评测和展示的自然语言
+`required_evidence` 字符串数组不是同一个字段接口；两者通过状态机的判定逻辑
+关联，不能把 `target_unreachable` 当成 Parser 字段，也不能把最终字符串数组改成
+事实对象。
+
 ### 5.6 下一跳不可达的统一判定字段
 
 `NEXT_HOP_UNREACHABLE` 不增加 `next_hop_unreachable` 这个 Parser 字段。统一判定依据是：

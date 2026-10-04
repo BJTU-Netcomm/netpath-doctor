@@ -36,6 +36,11 @@ class HuaweiVrpParserTests(unittest.TestCase):
         self.assertEqual(facts["next_hop"], "10.0.23.2")
         self.assertEqual(facts["out_interface"], "GigabitEthernet0/0/1")
 
+    def test_route_count_zero_is_a_missing_route(self) -> None:
+        for header in ("Summary Count : 0", "Route Count : 0"):
+            facts = parse_route(header, {})
+            self.assertEqual(facts, {"route_found": False})
+
     def test_interface_extracts_states(self) -> None:
         text = "GE0/0/1 current state : DOWN\nLine protocol current state : DOWN"
         facts = parse_interface(text, {})
