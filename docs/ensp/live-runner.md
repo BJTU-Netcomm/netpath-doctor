@@ -92,6 +92,10 @@ The summary is written to `reports/live/experiment_latest.json`. Raw diagnosis
 and configuration output is kept in `reports/live/experiment_raw/`. Both paths
 are ignored by Git because the output may contain local device details.
 
+The second live scenario, `ROUTE_MISSING`, is documented in
+`docs/ensp/route-missing.md`. It removes and restores R2's static route and
+uses the same read-only diagnosis Agent.
+
 If a run is interrupted, check R2 from the eNSP console before continuing:
 
 ```text
