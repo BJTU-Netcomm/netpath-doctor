@@ -85,6 +85,7 @@ class ENSPConsoleTransport:
 
         device_name = self.resolve_device(device)
         last_error: Exception | None = None
+        empty_results = 0
         for _attempt in range(2):
             connection = self._connect(device_name)
             try:
@@ -94,11 +95,24 @@ class ENSPConsoleTransport:
                     self._capture(device_name, command, output)
                     return output
                 last_error = ValueError("eNSP console returned an empty command result")
+                empty_results += 1
             except (TimeoutError, ConnectionError, OSError, ValueError) as exc:
                 last_error = exc
             finally:
                 connection.close()
         assert last_error is not None
+        # Some eNSP/VRP builds return only the prompt when a filtered routing
+        # query has no match.  Ask for the complete table so the parser can
+        # distinguish a real missing route from a broken/truncated response.
+        if empty_results == 2 and re.fullmatch(
+            r"display\s+ip\s+routing-table\s+(?:\d{1,3}\.){3}\d{1,3}",
+            command.strip(),
+            flags=re.IGNORECASE,
+        ):
+            fallback_command = "display ip routing-table"
+            fallback_output = self.send(device_name, fallback_command)
+            self._capture(device_name, command + " [fallback]", fallback_output)
+            return fallback_output
         raise last_error
 
     def send_config(self, device: str, commands: list[str]) -> str:

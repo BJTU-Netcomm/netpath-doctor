@@ -123,6 +123,44 @@ class ENSPConsoleTransportTests(unittest.TestCase):
         with self.assertRaisesRegex(ENSPConsoleConfigurationError, "valid integer port"):
             ENSPConsoleTransport({"R1": {}}, default_device="R1")
 
+    def test_empty_filtered_route_query_falls_back_to_full_table(self) -> None:
+        command = "display ip routing-table 192.168.3.1"
+        full_table = (
+            b"Routing Tables: Public\r\nDestinations : 1 Routes : 1\r\n"
+            b"10.0.12.0/24 Direct 0 0 D 10.0.12.2 GE0/0/0"
+        )
+        sockets = [
+            FakeSocket([b"<R2>\r\n", None, command.encode() + b"\r\n<R2>\r\n"])
+            for _ in range(2)
+        ]
+        sockets.append(FakeSocket([
+            b"<R2>\r\n", None,
+            b"display ip routing-table\r\n" + full_table + b"\r\n<R2>\r\n",
+        ]))
+        opened = list(sockets)
+        transport = ENSPConsoleTransport(
+            self.inventory, default_device="R1", socket_factory=lambda *_: sockets.pop(0)
+        )
+        output = transport.send("R2", command)
+        from parser.huawei_vrp import parse_cli_output
+
+        parsed = parse_cli_output("CHECK_ROUTE", output, context={"destination": "192.168.3.1"})
+        self.assertTrue(parsed["success"])
+        self.assertEqual(parsed["facts"], {"route_found": False})
+        self.assertIn(b"display ip routing-table\r\n", opened[-1].sent)
+        self.assertTrue(all(sock.closed for sock in opened))
+
+    def test_empty_other_command_is_still_an_error(self) -> None:
+        sockets = [
+            FakeSocket([b"<R2>\r\n", None, b"display arp\r\n<R2>\r\n"])
+            for _ in range(2)
+        ]
+        transport = ENSPConsoleTransport(
+            self.inventory, default_device="R1", socket_factory=lambda *_: sockets.pop(0)
+        )
+        with self.assertRaisesRegex(ValueError, "empty command result"):
+            transport.send("R2", "display arp")
+
     def test_recovery_requires_interface_up_and_up(self) -> None:
         class RecoveryTransport(ENSPConsoleTransport):
             def __init__(self) -> None:

@@ -46,7 +46,12 @@ def _ping(transport: ExperimentTransport, device: str, target_ip: str) -> dict[s
 
 def _route(transport: ExperimentTransport, device: str, target_ip: str) -> dict[str, Any]:
     raw_output = transport.send(device, f"display ip routing-table {target_ip}")
-    return parse_cli_output("CHECK_ROUTE", raw_output, device=device)
+    return parse_cli_output(
+        "CHECK_ROUTE",
+        raw_output,
+        device=device,
+        context={"destination": target_ip},
+    )
 
 
 def _apply_interface_state(

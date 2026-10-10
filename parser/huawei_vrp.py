@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 import re
 from typing import Any, Callable
 
@@ -58,7 +59,15 @@ def parse_tracert(text: str, context: dict[str, Any]) -> dict[str, Any]:
     return facts
 
 
-def parse_route(text: str, _: dict[str, Any]) -> dict[str, Any]:
+ROUTE_ENTRY_PATTERN = re.compile(
+    r"^\s*(?P<destination>(?:\d{1,3}\.){3}\d{1,3}/\d+)\s+"
+    r"\S+\s+\d+\s+\d+\s+\S+\s+"
+    r"(?P<next_hop>(?:\d{1,3}\.){3}\d{1,3})\s+"
+    r"(?P<interface>\S+)\s*$"
+)
+
+
+def parse_route(text: str, context: dict[str, Any]) -> dict[str, Any]:
     count_match = re.search(
         r"(?:Summary|Route)\s+Count\s*:\s*(\d+)",
         text,
@@ -67,21 +76,53 @@ def parse_route(text: str, _: dict[str, Any]) -> dict[str, Any]:
     if count_match and int(count_match.group(1)) == 0:
         return {"route_found": False}
 
-    route_pattern = re.compile(
-        r"^\s*(?P<destination>(?:\d{1,3}\.){3}\d{1,3}/\d+)\s+"
-        r"\S+\s+\d+\s+\d+\s+\S+\s+"
-        r"(?P<next_hop>(?:\d{1,3}\.){3}\d{1,3})\s+"
-        r"(?P<interface>\S+)\s*$"
-    )
+    entries: list[dict[str, Any]] = []
     for line in text.splitlines():
-        match = route_pattern.match(line)
-        if match:
-            return {
+        match = ROUTE_ENTRY_PATTERN.match(line)
+        if not match:
+            continue
+        try:
+            network = ipaddress.ip_network(match.group("destination"), strict=False)
+        except ValueError:
+            continue
+        entries.append(
+            {
                 "route_found": True,
                 "destination": match.group("destination"),
                 "next_hop": match.group("next_hop"),
                 "out_interface": normalize_interface(match.group("interface")),
+                "_network": network,
             }
+        )
+
+    target = context.get("destination")
+    if target:
+        try:
+            target_ip = ipaddress.ip_address(str(target))
+        except ValueError as exc:
+            raise ValueError(f"invalid route destination: {target}") from exc
+        matching = [entry for entry in entries if target_ip in entry["_network"]]
+        if matching:
+            selected = max(matching, key=lambda entry: entry["_network"].prefixlen)
+            selected.pop("_network", None)
+            return selected
+        # A complete, parseable routing table with no covering route is a
+        # trustworthy negative result.  Requiring at least one parsed entry
+        # avoids turning a truncated or malformed response into a false fault.
+        table_count = re.search(r"Destinations\s*:\s*\d+\s+Routes\s*:\s*(\d+)", text, flags=re.I)
+        if (
+            entries
+            and re.search(r"Routing Tables?:\s*\S+", text, flags=re.I)
+            and table_count
+            and int(table_count.group(1)) == len(entries)
+        ):
+            return {"route_found": False}
+        raise ValueError("route output does not contain a recognizable route entry")
+
+    if entries:
+        selected = entries[0]
+        selected.pop("_network", None)
+        return selected
     raise ValueError("route output does not contain a recognizable route entry")
 
 

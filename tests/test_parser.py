@@ -48,6 +48,45 @@ class HuaweiVrpParserTests(unittest.TestCase):
         self.assertEqual(facts["physical_status"], "DOWN")
         self.assertEqual(facts["protocol_status"], "DOWN")
 
+    def test_full_route_table_selects_longest_matching_prefix(self) -> None:
+        text = (
+            "Routing Tables: Public\nDestinations : 3 Routes : 3\n"
+            "0.0.0.0/0 Static 60 0 RD 10.0.12.2 GE0/0/0\n"
+            "192.168.3.0/24 Static 60 0 RD 10.0.23.2 GE0/0/1\n"
+            "192.168.3.1/32 Static 60 0 RD 10.0.23.3 GE0/0/2"
+        )
+        facts = parse_route(text, {"destination": "192.168.3.1"})
+        self.assertEqual(facts["destination"], "192.168.3.1/32")
+        self.assertEqual(facts["next_hop"], "10.0.23.3")
+        default = parse_route(text, {"destination": "203.0.113.1"})
+        self.assertEqual(default["destination"], "0.0.0.0/0")
+
+    def test_complete_route_table_can_prove_target_route_missing(self) -> None:
+        text = (
+            "Routing Tables: Public\nDestinations : 1 Routes : 1\n"
+            "10.0.12.0/24 Direct 0 0 D 10.0.12.2 GE0/0/0"
+        )
+        self.assertEqual(
+            parse_route(text, {"destination": "192.168.3.1"}),
+            {"route_found": False},
+        )
+
+    def test_incomplete_route_table_cannot_prove_route_missing(self) -> None:
+        outputs = [
+            "",
+            "Routing Tables: Public\nDestinations : 1 Routes : 1\nmalformed entry",
+            "Routing Tables: Public\nDestinations : 2 Routes : 2\n"
+            "10.0.12.0/24 Direct 0 0 D 10.0.12.2 GE0/0/0",
+            "10.0.12.0/24 Direct 0 0 D 10.0.12.2 GE0/0/0",
+        ]
+        for text in outputs:
+            with self.subTest(text=text):
+                result = parse_cli_output(
+                    "CHECK_ROUTE", text, context={"destination": "192.168.3.1"}
+                )
+                self.assertFalse(result["success"])
+                self.assertEqual(result["facts"], {})
+
     def test_interface_accepts_administratively_down(self) -> None:
         text = (
             "GigabitEthernet0/0/1 current state : Administratively DOWN\n"
