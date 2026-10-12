@@ -1,0 +1,6 @@
+<R2>display ip routing-table 192.168.3.10
+Summary Count : 1
+Routing Table : Public
+         Destination/Mask    Proto  Pre  Cost      Flags NextHop         Interface
+
+       192.168.3.0/24  Static  60   0          RD   10.0.23.2      GigabitEthernet0/0/1

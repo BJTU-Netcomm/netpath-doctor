@@ -1,0 +1,14 @@
+<R2>display arp
+IP ADDRESS      MAC ADDRESS     EXPIRE(M) TYPE        INTERFACE      VPN-INSTANCE
+                                          VLAN/CEVLAN PVC
+------------------------------------------------------------------------------
+10.0.12.2       00e0-fcb7-0e9c  I -                    GE0/0/0
+10.0.12.1       00e0-fce0-7d77  14       D-0            GE0/0/0
+10.0.23.1       00e0-fcb7-0e9d  I -                    GE0/0/1
+10.0.23.2       00e0-fca9-0fa3  14       D-0            GE0/0/1
+192.168.8.2     00e0-fcb7-0e9e  I -                    GE0/0/2
+
+------------------------------------------------------------------------------
+Total:5        Dynamic:2       Static:0       Interface:3
+
+<R2>

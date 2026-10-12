@@ -1,0 +1,15 @@
+<R1>ping 192.168.3.1
+  PING 192.168.3.1: 56  data bytes, press CTRL_C to break
+    Reply from 192.168.3.1: bytes=56 Sequence=1 ttl=254 time=30 ms
+    Reply from 192.168.3.1: bytes=56 Sequence=2 ttl=254 time=30 ms
+    Reply from 192.168.3.1: bytes=56 Sequence=3 ttl=254 time=30 ms
+    Reply from 192.168.3.1: bytes=56 Sequence=4 ttl=254 time=20 ms
+    Reply from 192.168.3.1: bytes=56 Sequence=5 ttl=254 time=40 ms
+
+  --- 192.168.3.1 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 20/30/40 ms
+
+<R1>

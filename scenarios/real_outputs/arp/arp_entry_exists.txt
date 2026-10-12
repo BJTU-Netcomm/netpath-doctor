@@ -1,0 +1,5 @@
+<R2>display arp 10.0.23.2
+IP ADDRESS      MAC ADDRESS     EXPIRE(M) TYPE        INTERFACE      VPN-INSTANCE
+------------------------------------------------------------------------------
+10.0.23.2       00e0-fc12-3456  20        D-0          GigabitEthernet0/0/2
+Total:2         Dyn:2   Static:0   Interface:0

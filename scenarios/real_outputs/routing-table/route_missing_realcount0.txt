@@ -1,0 +1,7 @@
+<R2>display ip routing-table
+Route Flags: R - relay, D - download to fib
+------------------------------------------------------------------------------
+Routing Tables: Public
+         Destination/Mask    Proto  Pre  Cost      Flags NextHop         Interface
+
+Route Count : 0

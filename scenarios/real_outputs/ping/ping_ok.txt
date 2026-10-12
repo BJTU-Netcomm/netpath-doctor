@@ -1,0 +1,9 @@
+<R1>ping 192.168.3.10
+  PING 192.168.3.10: 56  data bytes, press CTRL_C to break
+    Reply from 192.168.3.10: bytes=56 Sequence=1 ttl=252 time=1 ms
+    Reply from 192.168.3.10: bytes=56 Sequence=2 ttl=252 time=1 ms
+  --- 192.168.3.10 ping statistics ---
+     2 packet(s) transmitted
+     2 packet(s) received
+     0.00% packet loss
+    round-trip min/avg/max = 1/1/1 ms

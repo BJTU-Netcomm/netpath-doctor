@@ -1,0 +1,10 @@
+<R2>display ip routing-table
+Route Flags: R - relay, D - download to fib
+------------------------------------------------------------------------------
+Routing Tables: Public
+         Destination/Mask    Proto  Pre  Cost      Flags NextHop         Interface
+
+        0.0.0.0/0  Static  60   0          RD   10.0.12.2      GigabitEthernet0/0/0
+        192.168.3.0/24  Static  60   0          RD   10.0.23.2      GigabitEthernet0/0/1
+        192.168.3.1/32  Static  60   0          RD   10.0.23.3      GigabitEthernet0/0/2
+Destinations : 3        Routes : 3
