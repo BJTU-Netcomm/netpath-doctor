@@ -62,6 +62,8 @@ class FakeRouteExperimentTransport:
             return "Route Flags: R - relay, D - download to fib\nRoute Count : 0"
         if command and command.startswith("tracert"):
             return "traceroute to 192.168.3.1, max hops: 3\n 1  *\n 2  *\n 3  *"
+        if command and command.startswith("display interface"):
+            return "GigabitEthernet0/0/1 current state : UP\nLine protocol current state : UP"
         return PING_UP if self.route_present else PING_DOWN
 
     def send_config(self, device: str, commands: list[str]) -> str:
@@ -287,7 +289,7 @@ class LiveExperimentTests(unittest.TestCase):
         self.assertEqual(result["diagnosis"]["fault_type"], "ROUTE_MISSING")
         self.assertEqual(
             [step["action"] for step in result["diagnosis"]["action_trace"]],
-            ["RUN_PING", "RUN_TRACERT", "CHECK_ROUTE", "CHECK_ROUTE", "FINISH_DIAGNOSIS"],
+            ["RUN_PING", "RUN_TRACERT", "CHECK_ROUTE", "CHECK_ROUTE", "CHECK_INTERFACE", "FINISH_DIAGNOSIS"],
         )
 
 

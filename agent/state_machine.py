@@ -71,28 +71,25 @@ class DiagnosisStateMachine:
                 reason="确认疑似故障设备上的目标路由",
             ),
         )
+        baseline_route = context.scenario.get("baseline_route_facts", {}).get(suspect_device, {})
+        baseline_available = baseline_route.get("route_found") and baseline_route.get("out_interface")
+        route_missing = bool(route_result.get("success")) and route_result["facts"].get("route_found") is False
         if not route_result.get("success"):
-            baseline_route = (
-                context.scenario.get("baseline_route_facts", {}).get(suspect_device, {})
-            )
-            if baseline_route.get("route_found") and baseline_route.get("out_interface"):
+            if baseline_available:
                 context.evidence.append(f"{suspect_device} 故障前目标路由存在")
                 route_result = {"success": True, "facts": baseline_route}
             else:
                 return self._request_more_data(context, ["route_facts"])
-        if not route_result["facts"].get("route_found"):
+        elif route_missing:
             context.evidence.append(f"{suspect_device} 目标路由不存在")
-            return self._finish_diagnosis(
-                context,
-                {
-                    "fault_device": suspect_device,
-                    "fault_type": "ROUTE_MISSING",
-                    "fault_interface": None,
-                    "target_network": scenario.get("destination_network", scenario["destination_ip"]),
-                },
-            )
-
-        context.evidence.append(f"{suspect_device} 目标路由存在")
+            if not baseline_available:
+                return self._finish_route_missing(context, suspect_device)
+            # An inactive route may be a consequence of a failed outgoing link.
+            # The measured baseline identifies an interface, not the expected fault.
+            context.evidence.append(f"{suspect_device} 使用故障前目标路由出接口继续核对")
+            route_result = {"success": True, "facts": baseline_route}
+        else:
+            context.evidence.append(f"{suspect_device} 目标路由存在")
 
         interface_name = self._resolve_interface_name(route_result)
         if not interface_name:
@@ -114,6 +111,7 @@ class DiagnosisStateMachine:
             context.evidence.append(
                 f"{suspect_device} 出接口 {interface_name} physical_status 为 DOWN"
             )
+
             return self._finish_diagnosis(
                 context,
                 {
@@ -122,6 +120,13 @@ class DiagnosisStateMachine:
                     "fault_interface": interface_name,
                 },
             )
+
+        if route_missing:
+            facts = interface_result["facts"]
+            if facts.get("physical_status") != "UP" or facts.get("protocol_status") != "UP":
+                return self._request_more_data(context, ["interface_link_state"])
+            context.evidence.append(f"{suspect_device} 故障前出接口 {interface_name} 当前 UP/UP")
+            return self._finish_route_missing(context, suspect_device)
 
         next_hop = route_result["facts"].get("next_hop")
         arp_target = next_hop or scenario["destination_ip"]
@@ -200,6 +205,15 @@ class DiagnosisStateMachine:
     def _resolve_interface_name(self, route_result: dict[str, Any]) -> str | None:
         facts = route_result.get("facts", {})
         return facts.get("out_interface")
+
+    def _finish_route_missing(self, context: DiagnosisContext, device: str) -> dict[str, Any]:
+        scenario = context.scenario
+        return self._finish_diagnosis(context, {
+            "fault_device": device,
+            "fault_type": "ROUTE_MISSING",
+            "fault_interface": None,
+            "target_network": scenario.get("destination_network", scenario["destination_ip"]),
+        })
 
     def _finish_normal(self, context: DiagnosisContext) -> dict[str, Any]:
         return {

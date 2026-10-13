@@ -355,7 +355,11 @@ def run_route_missing_trial(
             )
             return report
 
-        report["diagnosis"] = diagnose(dict(scenario), transport)
+        diagnosis_scenario = dict(scenario)
+        diagnosis_scenario["baseline_route_facts"] = {
+            fault_device: dict(pre_injection_route["facts"])
+        }
+        report["diagnosis"] = diagnose(diagnosis_scenario, transport)
     except Exception as exc:
         report["error"] = f"{type(exc).__name__}: {exc}"
     finally:
