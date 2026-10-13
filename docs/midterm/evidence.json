@@ -1,0 +1,105 @@
+{
+  "checked_at_utc": "2026-10-13T13:59:19+00:00",
+  "source_head": "1ee24b175111960a48bf758c5533b828843e053a",
+  "source_note": "HEAD before committing this material bundle; documentation changes do not constitute a live rerun",
+  "pytest": {
+    "command": "python -m pytest -q",
+    "exit_code": 0,
+    "passed": 102,
+    "summary": "102 passed, 4 subtests passed in 5.05s"
+  },
+  "benchmark": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "all_passed": true,
+    "execution_modes": {
+      "cli_replay": 20
+    }
+  },
+  "historical_live_reports": [
+    {
+      "path": "reports/live/console_experiment_complete.json",
+      "sha256": "baf9bf4b1d4916e3041dc7488154bf4805487354ad5ec115851628078268631d",
+      "status": "historical local report; not a new run",
+      "file_mtime": "2026-09-29T12:52:20",
+      "requested_trials": 3,
+      "passed_trials": 3,
+      "all_passed": true,
+      "trials": [
+        {
+          "passed": true,
+          "fault_type": "INTERFACE_DOWN",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 20
+          }
+        },
+        {
+          "passed": true,
+          "fault_type": "INTERFACE_DOWN",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 20
+          }
+        },
+        {
+          "passed": true,
+          "fault_type": "INTERFACE_DOWN",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 20
+          }
+        }
+      ]
+    },
+    {
+      "path": "reports/live/console_route_missing_complete.json",
+      "sha256": "07abb1e50745d797b3d76dd294aaa055aed356ede8d85295cc4feae81142795c",
+      "status": "historical local report; not a new run",
+      "file_mtime": "2026-10-10T23:08:28",
+      "requested_trials": 3,
+      "passed_trials": 3,
+      "all_passed": true,
+      "trials": [
+        {
+          "passed": true,
+          "fault_type": "ROUTE_MISSING",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 0
+          }
+        },
+        {
+          "passed": true,
+          "fault_type": "ROUTE_MISSING",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 0
+          }
+        },
+        {
+          "passed": true,
+          "fault_type": "ROUTE_MISSING",
+          "fault_device": "R2",
+          "recovery_success": true,
+          "post_recovery_facts": {
+            "reachable": true,
+            "packet_loss": 0
+          }
+        }
+      ]
+    }
+  ],
+  "current_release_live_acceptance": "PENDING; no device connection in this material preparation"
+}

@@ -13,3 +13,5 @@ reports/live/experiment_raw/
 reports/live/console_*/
 reports/live/console_*.json
 scenarios/live/*.local.json
+docs/midterm/_preview/
+docs/midterm/_draft_archive/

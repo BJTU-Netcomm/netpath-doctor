@@ -1,0 +1,30 @@
+{
+  "scope": "offline interface capture checks; provenance must be reviewed by collector",
+  "all_passed": false,
+  "results": [
+    {
+      "file": "normal/interface_detail_R2.txt",
+      "expected_physical": "UP",
+      "expected_protocol": "UP",
+      "passed": false,
+      "status": "MISSING",
+      "error": "Measured capture has not been supplied"
+    },
+    {
+      "file": "interface_down/interface_detail_R2_down.txt",
+      "expected_physical": "DOWN",
+      "expected_protocol": "DOWN",
+      "passed": false,
+      "status": "MISSING",
+      "error": "Measured capture has not been supplied"
+    },
+    {
+      "file": "recovered/interface_detail_R2_recovered.txt",
+      "expected_physical": "UP",
+      "expected_protocol": "UP",
+      "passed": false,
+      "status": "MISSING",
+      "error": "Measured capture has not been supplied"
+    }
+  ]
+}
