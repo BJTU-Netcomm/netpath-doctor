@@ -25,6 +25,29 @@ class ReplayExecutor:
             (self.case_dir / "log_manifest.json").read_text(encoding="utf-8")
         )
 
+    def capability_summary(self) -> dict[str, Any]:
+        """Return safe availability metadata without exposing expected answers."""
+        available: list[dict[str, Any]] = []
+        for action_name, entries in self.manifest.get("actions", {}).items():
+            if not isinstance(entries, dict):
+                continue
+            if "file" in entries:
+                available.append({"action": action_name, "device": entries.get("device")})
+                continue
+            for key, entry in entries.items():
+                if not isinstance(entry, dict):
+                    continue
+                item: dict[str, Any] = {"action": action_name}
+                if entry.get("device"):
+                    item["device"] = entry["device"]
+                if ":" in key and entry.get("device"):
+                    item["interface"] = key.split(":", 1)[1]
+                available.append(item)
+        return {
+            "available_observations": available,
+            "note": "Only listed action/device/interface combinations have replay logs; unsupported requests return an error.",
+        }
+
     def execute(self, action: AgentAction) -> dict[str, Any]:
         request = build_execution_request(action, self.action_catalog)
         entry = self._lookup_entry(action)
@@ -36,10 +59,12 @@ class ReplayExecutor:
                 "command": request["command"],
                 "command_type": action.action,
                 "facts": {},
+                "raw_ref": None,
                 "error": f"No replay log configured for {action.action}",
             }
 
-        text = (self.case_dir / entry["file"]).read_text(encoding="utf-8")
+        log_path = self.case_dir / entry["file"]
+        text = log_path.read_text(encoding="utf-8")
         context = dict(self.manifest.get("context", {}))
         context.update(action.parameters)
         result = parse_cli_output(
@@ -50,6 +75,9 @@ class ReplayExecutor:
             context=context,
         )
         result["command"] = request["command"]
+        # A replay result must remain distinguishable from a live device result.
+        # The URI is stable within the case and does not expose machine paths.
+        result["raw_ref"] = f"replay://{self.case_dir.name}/{entry['file']}"
         return result
 
     def _lookup_entry(self, action: AgentAction) -> dict[str, Any] | None:
@@ -57,6 +85,9 @@ class ReplayExecutor:
         if not isinstance(entries, dict):
             return None
         if "file" in entries:
+            configured_device = entries.get("device")
+            if configured_device and action.target_device and configured_device != action.target_device:
+                return None
             return entries
 
         interface = action.parameters.get("interface")
