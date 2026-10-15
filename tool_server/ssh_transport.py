@@ -32,6 +32,7 @@ class SSHTransport:
         self.command_timeout = command_timeout
         self.capture_dir = Path(capture_dir) if capture_dir else None
         self._capture_sequence = 0
+        self.last_raw_ref: str | None = None
         self._validate_inventory()
 
     @classmethod
@@ -160,6 +161,7 @@ class SSHTransport:
         )
 
     def _capture(self, device: str, command: str, output: str) -> None:
+        self.last_raw_ref = None
         if self.capture_dir is None:
             return
         self.capture_dir.mkdir(parents=True, exist_ok=True)
@@ -167,3 +169,4 @@ class SSHTransport:
         command_slug = re.sub(r"[^a-zA-Z0-9]+", "_", command).strip("_").lower()
         filename = f"{self._capture_sequence:02d}_{device}_{command_slug}.txt"
         (self.capture_dir / filename).write_text(output, encoding="utf-8")
+        self.last_raw_ref = f"live://{filename}"

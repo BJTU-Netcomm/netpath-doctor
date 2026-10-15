@@ -1,0 +1,300 @@
+{
+  "schema_version": "netpath_doctor.ai_task_book.v2",
+  "updated": "2026-10-14",
+  "project": "NetPath-Doctor",
+  "branch": "feat/midterm-integration",
+  "purpose": "供组员、导师和代码辅助AI阅读、执行和验收",
+  "change": {
+    "previous_goal": [
+      "eNSP R1-R2-R3拓扑",
+      "Huawei VRP回显解析",
+      "INTERFACE_DOWN和ROUTE_MISSING诊断",
+      "离线Benchmark与现场实验",
+      "中期答辩材料"
+    ],
+    "new_goal": "构建AI调用网络诊断工具的tool/harness",
+    "architecture": [
+      "transport",
+      "readonly_tools",
+      "vrp_parser",
+      "facts",
+      "qwen_bailian",
+      "policy_audit_benchmark"
+    ],
+    "midterm_scope": [
+      "百炼 API调用Qwen",
+      "Replay中完成工具调用和结构化诊断",
+      "eNSP只读观察演示",
+      "外层控制器负责故障注入和恢复"
+    ],
+    "final_scope": [
+      "统一Replay/eNSP Console/SSH transport",
+      "8B基座评测",
+      "LoRA或QLoRA微调",
+      "留出拓扑和真实设备泛化测试"
+    ],
+    "explicitly_not_claimed": [
+      "中期自主修复",
+      "中期完成8B微调",
+      "Replay结果等于真实eNSP结果"
+    ]
+  },
+  "baseline": {
+    "completed": [
+      "R1-R2-R3拓扑",
+      "Huawei VRP Parser",
+      "ping/tracert/routing-table/interface/ARP解析",
+      "规则状态机",
+      "ReplayExecutor",
+      "ENSPConsoleTransport",
+      "SSHTransport代码",
+      "两类故障实验入口",
+      "108个单元测试（另有4个子测试）",
+      "CLI Replay Benchmark 20/20",
+      "AI tool contract Benchmark 20/20（确定性 scripted planner）",
+      "答辩材料"
+    ],
+    "frozen_fact_fields": [
+      "reachable",
+      "packet_loss",
+      "route_found",
+      "physical_status",
+      "protocol_status",
+      "entry_found",
+      "last_reachable_device"
+    ],
+    "frozen_diagnosis_fields": [
+      "diagnosis_status",
+      "fault_type",
+      "fault_device",
+      "fault_interface",
+      "target_network",
+      "evidence"
+    ]
+  },
+  "ai_contract": {
+    "readonly_tools": [
+      {
+        "name": "run_ping",
+        "parameters": [
+          "device",
+          "target_ip"
+        ]
+      },
+      {
+        "name": "run_tracert",
+        "parameters": [
+          "device",
+          "target_ip"
+        ]
+      },
+      {
+        "name": "check_route",
+        "parameters": [
+          "device",
+          "destination"
+        ]
+      },
+      {
+        "name": "check_interface",
+        "parameters": [
+          "device",
+          "interface"
+        ]
+      },
+      {
+        "name": "check_arp",
+        "parameters": [
+          "device",
+          "target_ip"
+        ]
+      }
+    ],
+    "tool_result_fields": [
+      "success",
+      "facts",
+      "raw_ref",
+      "error"
+    ],
+    "forbidden_direct_actions": [
+      "shutdown",
+      "undo shutdown",
+      "undo ip route-static",
+      "ip route-static",
+      "任意shell",
+      "未注册设备命令"
+    ],
+    "max_steps": 24,
+    "insufficient_evidence_result": "NEED_MORE_DATA",
+    "recovery_owner": "外层实验控制器，必须使用finally保证恢复"
+  },
+  "midterm_acceptance": {
+    "environment": [
+      "DASHSCOPE_API_KEY环境变量可用",
+      "qwen3.8-27b可运行",
+      "导师PydanticAI示例连续10次工具调用成功并保存trace"
+    ],
+    "replay": {
+      "cases_minimum": 20,
+      "coverage": [
+        "normal",
+        "INTERFACE_DOWN",
+        "ROUTE_MISSING",
+        "NEED_MORE_DATA",
+        "parser_error_or_missing_evidence"
+      ],
+      "thresholds": {
+        "legacy_cli_benchmark": "20/20且不退化",
+        "tool_call_json_parse_rate": 1,
+        "illegal_tool_call_rate": 0,
+        "evidence_traceability": 1,
+        "ai_tool_contract_benchmark": "20/20且不退化",
+        "qwen_blind_accuracy": "待真实Qwen批量运行后统计，不以scripted planner替代",
+        "max_tool_steps": 5,
+        "deterministic_fallback": true
+      }
+    },
+    "live": {
+      "transport_order": [
+        "Replay",
+        "eNSP Console",
+        "SSH"
+      ],
+      "trials_per_fault": 3,
+      "required_artifacts": [
+        "raw_cli",
+        "parser_facts",
+        "qwen_tool_trace",
+        "final_json",
+        "recovery_result",
+        "timestamp",
+        "git_commit"
+      ]
+    }
+  },
+  "members": [
+    {
+      "name": "段振阳",
+      "role": "AI集成、实验闭环和主讲",
+      "deliverables": [
+        "ai/bailian_client.py",
+        "ai/network_agent.py",
+        "ai/schemas.py",
+        "tests/test_ai_agent_loop.py",
+        "reports/ai_trace/",
+        "docs/ai/AI现场演示步骤.md"
+      ],
+      "acceptance": [
+        "Qwen调用至少一个网络工具",
+        "Replay完成一次完整诊断",
+        "输出现有字段",
+        "模型失败可回退规则状态机",
+        "现场演示三种状态"
+      ],
+      "not_responsible": [
+        "修改Parser字段",
+        "设计新故障类型",
+        "直接开放写命令",
+        "虚构现场结果"
+      ]
+    },
+    {
+      "name": "李梦瑶",
+      "role": "工具harness、安全策略和设备实验控制",
+      "deliverables": [
+        "harness/tool_registry.py",
+        "harness/policy.py",
+        "tests/test_tool_policy.py",
+        "docs/ai/tool-contract.md",
+        "docs/cli_records/",
+        "reports/live/"
+      ],
+      "acceptance": [
+        "五个工具支持Replay",
+        "非法工具设备参数被拒绝",
+        "超时不死循环",
+        "注入后进入恢复",
+        "每次现场有原始回显和恢复记录"
+      ],
+      "not_responsible": [
+        "修改Qwen Prompt",
+        "修改诊断字段",
+        "宣称识别准确率",
+        "把写命令交给模型"
+      ]
+    },
+    {
+      "name": "邓予钦",
+      "role": "Parser、数据集和AI Benchmark",
+      "deliverables": [
+        "tests/test_ai_tool_calls.py",
+        "benchmarks/ai_replay_benchmark.py",
+        "data/ai_replay/",
+        "reports/ai_benchmark/",
+        "docs/ai/parser-ai-validation.md"
+      ],
+      "acceptance": [
+        "三态解析正确",
+        "旧pytest和20/20不退化",
+        "20个Replay case有标签",
+        "evidence可追溯facts",
+        "区分Replay历史现场当前现场"
+      ],
+      "not_responsible": [
+        "维护百炼 API",
+        "修改现场命令",
+        "修改Qwen模型",
+        "把构造样例写成实测"
+      ]
+    }
+  ],
+  "dependency_order": [
+    "李梦瑶完成工具契约和Replay工具",
+    "邓予钦固定Parser facts和Benchmark数据",
+    "段振阳接入百炼 API和Agent",
+    "三人检查Replay 20-case",
+    "段振阳接eNSP Console",
+    "李梦瑶执行注入恢复并保存原文",
+    "邓予钦解析和统计",
+    "段振阳完成演示和答辩"
+  ],
+  "ai_rules": [
+    "先检查分支和已有实现",
+    "不覆盖Parser Benchmark现场证据",
+    "不虚构实验结果",
+    "不把Replay称为真实设备输出",
+    "不改变V1字段",
+    "不开放shell和任意配置命令",
+    "所有tool call写入trace",
+    "写操作由外层控制器执行并恢复",
+    "测试失败报告真实错误",
+    "修改后运行测试并记录commit"
+  ],
+  "weekly_checklist": {
+    "段振阳": [
+      "安装百炼 API",
+      "运行qwen3.8-27b",
+      "复现PydanticAI示例",
+      "创建feat/bailian-agent",
+      "完成run_ping Agent循环",
+      "输出第一份AI trace"
+    ],
+    "李梦瑶": [
+      "提交五个只读工具接口",
+      "提交白名单和参数校验",
+      "确认写操作不被AI调用",
+      "补齐interface三态原文",
+      "保存一轮现场原文"
+    ],
+    "邓予钦": [
+      "固定AI工具facts schema",
+      "建立20个Replay case标签",
+      "编写工具调用JSON校验",
+      "编写AI Benchmark",
+      "确认旧Benchmark 20/20",
+      "输出第一份AI评测报告"
+    ]
+  },
+  "reporting_statement": "我们保留可解释的Parser和规则状态机，把Qwen接入为受控决策层。当前先在Replay数据上完成工具调用和结构化诊断，再接入eNSP的只读观察链路；故障注入与恢复由可审计的外层harness控制。最终阶段再用真实CLI和工具轨迹构造数据，对开源8B instruct模型进行LoRA/QLoRA微调，并在留出Benchmark和现场拓扑上比较效果。"
+}
+

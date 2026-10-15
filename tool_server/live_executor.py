@@ -40,6 +40,7 @@ class LiveExecutor:
                 "command": request["command"],
                 "command_type": action.action,
                 "facts": {},
+                "raw_ref": None,
                 "error": f"CLI transport error: {exc}",
             }
 
@@ -55,4 +56,9 @@ class LiveExecutor:
             context=context,
         )
         result["command"] = request["command"]
+        # Transports may expose a capture reference (for example a local
+        # console capture file). Keep it optional so old transports continue
+        # to work unchanged.
+        capture_ref = getattr(self.transport, "last_raw_ref", None)
+        result["raw_ref"] = capture_ref
         return result
