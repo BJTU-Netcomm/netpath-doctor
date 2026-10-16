@@ -90,6 +90,38 @@ def test_interface_down_finish_requires_matching_observation():
     assert result["tool_trace"][-1]["result"]["success"] is True
 
 
+def test_route_missing_is_rejected_when_same_device_interface_is_down():
+    """A shutdown can withdraw the route; the physical fault has priority."""
+    client = FakeClient([
+        tool_call("check_route", {"device": "R2", "destination": "192.168.3.1"}),
+        tool_call("check_interface", {"device": "R2", "interface": "GigabitEthernet0/0/1"}, "call-2"),
+        tool_call("finish_diagnosis", {"diagnosis": {
+            "diagnosis_status": "COMPLETED",
+            "fault_type": "ROUTE_MISSING",
+            "fault_device": "R2",
+            "fault_interface": None,
+            "evidence": ["route_found=false"],
+        }}, "call-3"),
+    ])
+
+    class FactsExecutor(RecordingExecutor):
+        def execute(self, action):
+            self.actions.append(action)
+            if action.action == "CHECK_ROUTE":
+                facts = {"route_found": False}
+            else:
+                facts = {
+                    "interface": "GigabitEthernet0/0/1",
+                    "physical_status": "DOWN",
+                    "protocol_status": "DOWN",
+                }
+            return {"success": True, "facts": facts, "raw_ref": "replay://test/output.txt", "error": None}
+
+    result = AIHarness(client, FactsExecutor(), catalog()).diagnose({"destination_ip": "192.168.3.1"})
+    assert result["diagnosis"]["diagnosis_status"] == "NEED_MORE_DATA"
+    assert "INTERFACE_DOWN" in result["diagnosis"]["evidence"][0]
+
+
 def test_capability_summary_is_added_without_answer_fields():
     class CapabilityExecutor(RecordingExecutor):
         def capability_summary(self):

@@ -168,6 +168,16 @@ def _validate_diagnosis(diagnosis: Any, observations: list[dict[str, Any]]) -> t
                 errors.append("ROUTE_MISSING fault_interface must be null")
             if not any(item.get("action") == "CHECK_ROUTE" and item.get("target_device") == device and item["result"]["facts"].get("route_found") is False for item in successful):
                 errors.append("ROUTE_MISSING requires a matching route_found=false observation")
+            if any(
+                item.get("action") == "CHECK_INTERFACE"
+                and item.get("target_device") == device
+                and item["result"]["facts"].get("physical_status") == "DOWN"
+                for item in successful
+            ):
+                errors.append(
+                    "ROUTE_MISSING is invalid when the fault device has a physical interface DOWN; "
+                    "classify the primary fault as INTERFACE_DOWN"
+                )
         elif fault_type == "ARP_UNRESOLVED":
             if not any(item.get("action") == "CHECK_ARP" and item.get("target_device") == device and item["result"]["facts"].get("entry_found") is False for item in successful):
                 errors.append("ARP_UNRESOLVED requires a matching ARP entry_found=false observation")
@@ -200,6 +210,7 @@ class AIHarness:
             "只能使用当前回放/现场能力摘要中列出的设备和观察项，不能为了试探而调用不存在的设备或日志。"
             "参数必须包含设备名和合法 IPv4/接口名。证据不足时必须调用 request_more_data；证据充分时必须调用 finish_diagnosis。"
             "最终诊断必须完全由成功工具返回的 facts 支持，不要根据场景标题或猜测作答。"
+            "如果同一故障设备的相关以太网接口 physical_status 为 DOWN，必须优先诊断为 INTERFACE_DOWN；接口关闭导致的路由撤销属于次生现象，不能仅凭 route_found=false 判为 ROUTE_MISSING。"
             "finish_diagnosis 必须使用紧凑 JSON：evidence 最多4条、每条不超过120个字符，只写事实摘要，不重复长篇回显。"
         )
         public_scenario = _safe_public_scenario(scenario)
