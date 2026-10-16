@@ -1,12 +1,12 @@
 {
-  "checked_at_utc": "2026-10-13T13:59:19+00:00",
-  "source_head": "1ee24b175111960a48bf758c5533b828843e053a",
-  "source_note": "HEAD before committing this material bundle; documentation changes do not constitute a live rerun",
+  "checked_at_utc": "2026-10-16T15:07:26+00:00",
+  "source_head": "bc8668d6d029319a6df507d630c4d5335dbe7016",
+  "source_note": "Code version used for this evidence bundle; documentation changes do not constitute a live rerun",
   "pytest": {
     "command": "python -m pytest -q",
     "exit_code": 0,
-    "passed": 102,
-    "summary": "102 passed, 4 subtests passed in 5.05s"
+    "passed": 113,
+    "summary": "113 passed, 4 subtests passed in 5.40s"
   },
   "benchmark": {
     "total": 20,
@@ -101,5 +101,41 @@
       ]
     }
   ],
-  "current_release_live_acceptance": "PENDING; no device connection in this material preparation"
+  "ai_diagnosis_reports": [
+    {
+      "path": "reports/live/ai_diagnosis.json",
+      "sha256": "CF413912BE64204C054A386ACB9A7081699C0F3A59A8AB4A88E3EFC9EB96954E",
+      "model": "qwen3.8-27b",
+      "status": "archived read-only diagnosis",
+      "fault_type": "INTERFACE_DOWN",
+      "fault_device": "R2",
+      "fault_interface": "GigabitEthernet0/0/1"
+    },
+    {
+      "path": "reports/live/ai_diagnosis_interface_down_run2.json",
+      "sha256": "CA93575D5AC6ED67DE7146971EF1545A84859868C65DF71AF5CD526678452894",
+      "model": "qwen3.8-27b",
+      "status": "archived read-only diagnosis",
+      "fault_type": "INTERFACE_DOWN",
+      "fault_device": "R2",
+      "fault_interface": "GigabitEthernet0/0/1"
+    },
+    {
+      "path": "reports/live/ai_diagnosis_route_missing_run2.json",
+      "sha256": "7E067AC3AA700CA3C425E2B2E28FF73D380994AA8C1A610D9E808BE68191C282",
+      "model": "qwen3.8-27b",
+      "status": "archived read-only diagnosis",
+      "fault_type": "ROUTE_MISSING",
+      "fault_device": "R2"
+    },
+    {
+      "path": "reports/live/ai_diagnosis_interface_down_20261016_221327.json",
+      "sha256": "8C31E0D3C1B1928F907993F3CF5DADCBDAE5A7F1763846793AA5C7FC220DDF1B",
+      "model": "qwen3.8-27b",
+      "status": "historical_bug_report",
+      "note": "旧版端点选择误判为 R3，保留作为 administrative_down 与端点优先级修复的依据"
+    }
+  ],
+  "current_release_live_acceptance": "MIDTERM_SUPPORTED_BY_ARCHIVED_EVIDENCE; further live reruns are follow-up validation",
+  "midterm_evidence_note": "中期报告、PPT、Replay Benchmark、历史 eNSP Console 报告和 Qwen/百炼只读诊断报告已经形成证据链；即时现场复测不是中期前置条件，后续现场实验属于增强验证。"
 }
