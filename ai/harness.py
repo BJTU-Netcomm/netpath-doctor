@@ -161,8 +161,28 @@ def _validate_diagnosis(diagnosis: Any, observations: list[dict[str, Any]]) -> t
             errors.append("COMPLETED diagnosis requires a valid fault_device")
         fault_type = value.get("fault_type")
         if fault_type == "INTERFACE_DOWN":
-            if not any(item.get("action") == "CHECK_INTERFACE" and item.get("target_device") == device and item["result"]["facts"].get("physical_status") == "DOWN" and (value.get("fault_interface") is None or item["result"]["facts"].get("interface") == value.get("fault_interface")) for item in successful):
+            matching_interface = [
+                item for item in successful
+                if item.get("action") == "CHECK_INTERFACE"
+                and item.get("target_device") == device
+                and item["result"]["facts"].get("physical_status") == "DOWN"
+                and (value.get("fault_interface") is None or item["result"]["facts"].get("interface") == value.get("fault_interface"))
+            ]
+            if not matching_interface:
                 errors.append("INTERFACE_DOWN requires a matching successful interface DOWN observation")
+            explicit_admin_down = [
+                item for item in successful
+                if item.get("action") == "CHECK_INTERFACE"
+                and item["result"]["facts"].get("administrative_down") is True
+            ]
+            if explicit_admin_down and not any(
+                item.get("target_device") == device
+                and item["result"]["facts"].get("interface") == value.get("fault_interface")
+                for item in explicit_admin_down
+            ):
+                errors.append(
+                    "INTERFACE_DOWN must identify the interface explicitly reported as Administratively DOWN"
+                )
         elif fault_type == "ROUTE_MISSING":
             if value.get("fault_interface") is not None:
                 errors.append("ROUTE_MISSING fault_interface must be null")
@@ -210,7 +230,7 @@ class AIHarness:
             "只能使用当前回放/现场能力摘要中列出的设备和观察项，不能为了试探而调用不存在的设备或日志。"
             "参数必须包含设备名和合法 IPv4/接口名。证据不足时必须调用 request_more_data；证据充分时必须调用 finish_diagnosis。"
             "最终诊断必须完全由成功工具返回的 facts 支持，不要根据场景标题或猜测作答。"
-            "如果同一故障设备的相关以太网接口 physical_status 为 DOWN，必须优先诊断为 INTERFACE_DOWN；接口关闭导致的路由撤销属于次生现象，不能仅凭 route_found=false 判为 ROUTE_MISSING。"
+            "如果同一故障设备的相关以太网接口 physical_status 为 DOWN，必须优先诊断为 INTERFACE_DOWN；接口关闭导致的路由撤销属于次生现象，不能仅凭 route_found=false 判为 ROUTE_MISSING。若接口 facts 中 administrative_down=true，必须把该设备和接口作为实际故障端点。"
             "finish_diagnosis 必须使用紧凑 JSON：evidence 最多4条、每条不超过120个字符，只写事实摘要，不重复长篇回显。"
         )
         public_scenario = _safe_public_scenario(scenario)

@@ -122,6 +122,35 @@ def test_route_missing_is_rejected_when_same_device_interface_is_down():
     assert "INTERFACE_DOWN" in result["diagnosis"]["evidence"][0]
 
 
+def test_interface_down_rejects_the_non_administratively_down_endpoint():
+    client = FakeClient([
+        tool_call("check_interface", {"device": "R2", "interface": "GigabitEthernet0/0/1"}),
+        tool_call("check_interface", {"device": "R3", "interface": "GigabitEthernet0/0/0"}, "call-2"),
+        tool_call("finish_diagnosis", {"diagnosis": {
+            "diagnosis_status": "COMPLETED",
+            "fault_type": "INTERFACE_DOWN",
+            "fault_device": "R3",
+            "fault_interface": "GigabitEthernet0/0/0",
+            "evidence": ["physical_status=DOWN"],
+        }}, "call-3"),
+    ])
+
+    class EndpointFactsExecutor(RecordingExecutor):
+        def execute(self, action):
+            self.actions.append(action)
+            admin = action.target_device == "R2"
+            return {"success": True, "facts": {
+                "interface": action.parameters["interface"],
+                "physical_status": "DOWN",
+                "protocol_status": "DOWN",
+                "administrative_down": admin,
+            }, "raw_ref": "replay://test/output.txt", "error": None}
+
+    result = AIHarness(client, EndpointFactsExecutor(), catalog()).diagnose({"destination_ip": "192.168.3.1"})
+    assert result["diagnosis"]["diagnosis_status"] == "NEED_MORE_DATA"
+    assert "Administratively DOWN" in result["diagnosis"]["evidence"][0]
+
+
 def test_capability_summary_is_added_without_answer_fields():
     class CapabilityExecutor(RecordingExecutor):
         def capability_summary(self):

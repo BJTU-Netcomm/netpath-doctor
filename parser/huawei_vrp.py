@@ -128,7 +128,7 @@ def parse_route(text: str, context: dict[str, Any]) -> dict[str, Any]:
 
 def parse_interface(text: str, _: dict[str, Any]) -> dict[str, Any]:
     physical = re.search(
-        r"^\s*(\S+)\s+current state\s*:\s*(?:Administratively\s+)?(UP|DOWN)",
+        r"^\s*(\S+)\s+current state\s*:\s*(Administratively\s+)?(UP|DOWN)",
         text,
         flags=re.I | re.M,
     )
@@ -137,8 +137,10 @@ def parse_interface(text: str, _: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("interface output does not contain physical and protocol states")
     return {
         "interface": normalize_interface(physical.group(1)),
-        "physical_status": physical.group(2).upper(),
+        "physical_status": physical.group(3).upper(),
         "protocol_status": protocol.group(1).upper(),
+        # Preserve the explicit VRP wording without changing the V1 status fields.
+        "administrative_down": bool(physical.group(2)),
     }
 
 

@@ -122,6 +122,7 @@ class RealVrpOutputProbeTests(unittest.TestCase):
         self.assertEqual(result["facts"]["interface"], "GigabitEthernet0/0/1")
         self.assertEqual(result["facts"]["physical_status"], "DOWN")
         self.assertEqual(result["facts"]["protocol_status"], "DOWN")
+        self.assertTrue(result["facts"]["administrative_down"])
 
     def test_interface_up(self) -> None:
         """构造 VRP 接口正常：UP/UP"""
@@ -131,6 +132,7 @@ class RealVrpOutputProbeTests(unittest.TestCase):
         self.assertTrue(result["success"])
         self.assertEqual(result["facts"]["physical_status"], "UP")
         self.assertEqual(result["facts"]["protocol_status"], "UP")
+        self.assertFalse(result["facts"]["administrative_down"])
 
     def test_arp_empty_total_zero(self) -> None:
         """构造 VRP 空 ARP 表：'Total:0' → entry_found=false"""

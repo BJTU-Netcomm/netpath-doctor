@@ -47,6 +47,7 @@ class HuaweiVrpParserTests(unittest.TestCase):
         self.assertEqual(facts["interface"], "GigabitEthernet0/0/1")
         self.assertEqual(facts["physical_status"], "DOWN")
         self.assertEqual(facts["protocol_status"], "DOWN")
+        self.assertFalse(facts["administrative_down"])
 
     def test_full_route_table_selects_longest_matching_prefix(self) -> None:
         text = (
@@ -94,6 +95,7 @@ class HuaweiVrpParserTests(unittest.TestCase):
         )
         facts = parse_interface(text, {})
         self.assertEqual(facts["physical_status"], "DOWN")
+        self.assertTrue(facts["administrative_down"])
 
     def test_arp_reports_target_entry(self) -> None:
         text = "192.168.3.10  00e0-fc00-0003  20  D-0  GE0/0/1"
