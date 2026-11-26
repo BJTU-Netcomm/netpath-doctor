@@ -21,4 +21,7 @@ docs/midterm/NetPath-Doctor_中期答辩_EasySlides.pptx
 docs/midterm/NetPath-Doctor_中期答辩_EasySlides.pdf
 
 config/bailian.local.env
+config/diagnosis_ui.local.json
+config/diagnosis_ui.local.tmp
+reports/ui_live/
 reports/ai_trace/*.raw.json

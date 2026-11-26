@@ -153,6 +153,12 @@ def parse_arp(text: str, context: dict[str, Any]) -> dict[str, Any]:
         return {"entry_found": True, "target_ip": target_ip}
     if re.search(r"\bTotal\s*:\s*0\b", text, flags=re.IGNORECASE):
         return {"entry_found": False, "target_ip": target_ip}
+    # Complete VRP tables include headers and a trailing Total summary.
+    # A nonzero table may still lack the requested IP. Require both markers
+    # so an incomplete/errored capture is never treated as proof of absence.
+    if (re.search(r"IP\s+ADDRESS\s+MAC\s+ADDRESS", text, re.IGNORECASE)
+            and re.search(r"\bTotal\s*:\s*\d+", text, re.IGNORECASE)):
+        return {"entry_found": False, "target_ip": target_ip}
     raise ValueError("ARP output does not contain an entry or a zero-entry summary")
 
 

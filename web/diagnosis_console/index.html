@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetPath-Doctor | 网络智能诊断实验平台</title>
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 29V11L30 29V11M10 11H30M10 29H30"/><circle cx="10" cy="11" r="3"/><circle cx="30" cy="11" r="3"/><circle cx="10" cy="29" r="3"/><circle cx="30" cy="29" r="3"/></svg></span><div><strong>NETPATH<span> / </span>DOCTOR</strong><small>NETWORK DIAGNOSTICS RESEARCH</small></div></div>
+      <div class="research-label">大学生创新训练项目 <span>/</span> 中期成果展示</div>
+      <div class="header-actions"><div class="status-pill"><i></i><span id="serviceStatus">连接本地服务…</span></div><button id="openSettings" class="secondary-button" type="button">⚙ API 设置</button></div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> LLM-DRIVEN NETWORK DIAGNOSTICS <span class="version">RESEARCH PROTOTYPE</span></div>
+        <h1>面向网络运维的<br><em>智能故障诊断平台</em><span class="title-dot">.</span></h1>
+        <p>以大语言模型为决策核心，连接网络仿真环境与诊断工具，<br class="desktop-break">构建「自主工具调用 — 设备证据采集 — 结构化故障定位」诊断链路。</p>
+        <div class="research-tags"><span>LLM Agent</span><span>Tool Harness</span><span>Evidence-driven Diagnosis</span></div>
+      </div>
+      <div class="architecture" aria-label="系统架构示意：模型经由 Harness 调用设备工具并接收证据反馈">
+        <div class="diagram-caption"><span>01 / SYSTEM ARCHITECTURE</span><span class="diagram-label">架构示意</span></div>
+        <svg class="architecture-svg" viewBox="0 0 480 205" role="img" aria-label="模型决策、工具调度与 eNSP 环境形成证据反馈循环">
+          <defs><linearGradient id="coreGradient" x1="0" x2="1"><stop stop-color="#142f4d"/><stop offset="1" stop-color="#102738"/></linearGradient></defs>
+          <circle class="orbit orbit-outer" cx="240" cy="96" r="76"/><circle class="orbit" cx="240" cy="96" r="65"/>
+          <path class="diagram-wire" d="M110 96H174M306 96H370M420 126V174H60V126"/>
+          <path class="diagram-packet" d="M110 96H174M306 96H370"/>
+          <rect class="diagram-node" x="10" y="64" width="100" height="64" rx="8"/><text class="diagram-symbol" x="60" y="88">⌘</text><text x="60" y="112">LLM 决策</text>
+          <path class="core-shape" fill="url(#coreGradient)" d="M210 45H270L300 96 270 147H210L180 96Z"/>
+          <path class="core-icon" d="M224 81H256V110H224ZM218 87H224M218 103H224M256 87H262M256 103H262M232 75V81M248 75V81M232 110V116M248 110V116M233 89H247V102H233Z"/>
+          <text class="diagram-core-label" x="240" y="136">HARNESS</text>
+          <rect class="diagram-node" x="370" y="64" width="100" height="64" rx="8"/><text class="diagram-symbol" x="420" y="88">▤</text><text x="420" y="112">eNSP 设备</text>
+          <text class="diagram-link-label" x="142" y="79">调用</text><text class="diagram-link-label" x="338" y="79">执行</text>
+          <rect class="feedback-label-bg" x="165" y="163" width="150" height="22"/><text class="diagram-feedback-label" x="240" y="178">CLI 回显 · 解析事实 · 证据校验</text>
+        </svg>
+        <div class="diagram-tools"><span>ping</span><span>tracert</span><span>routing-table</span><span>interface</span><span>arp</span></div>
+      </div>
+    </section>
+
+    <section class="telemetry" aria-label="本轮诊断运行指标">
+      <div class="telemetry-item session-state"><span class="telemetry-label">SESSION STATUS <small>执行状态</small></span><strong id="sessionState">待命就绪</strong><span class="telemetry-caption" id="sessionDetail">等待发起诊断任务</span></div>
+      <div class="telemetry-item"><span class="telemetry-label">MODEL TURNS <small>模型轮次</small></span><strong><span id="modelTurns">—</span><small>轮</small></strong><span class="telemetry-caption">本轮模型决策次数</span></div>
+      <div class="telemetry-item"><span class="telemetry-label">TOOL CALLS <small>工具调用</small></span><strong><span id="toolCount">0</span><small>次</small></strong><span class="telemetry-caption" id="toolDetail">实际诊断观察 · 不含连接检测</span></div>
+      <div class="telemetry-item"><span class="telemetry-label">ELAPSED TIME <small>诊断耗时</small></span><strong><span id="elapsedTime">0.0</span><small>s</small></strong><span class="telemetry-caption">包含模型响应与设备执行</span></div>
+    </section>
+
+    <div class="section-heading"><div><span class="section-index">01 — 04</span><h2>智能诊断工作台</h2></div><span class="section-subtitle">观察有来源 · 判断有依据 · 过程可追溯</span></div>
+    <nav class="pipeline" aria-label="诊断执行阶段"><div id="phaseInput" class="pipeline-step current"><span>01</span><div><strong>任务定义</strong><small>TASK DEFINITION</small></div></div><i></i><div id="phaseReason" class="pipeline-step"><span>02</span><div><strong>模型决策</strong><small>AGENT PLANNING</small></div></div><i></i><div id="phaseObserve" class="pipeline-step"><span>03</span><div><strong>工具观测</strong><small>TOOL OBSERVATION</small></div></div><i></i><div id="phaseResult" class="pipeline-step"><span>04</span><div><strong>诊断输出</strong><small>DIAGNOSIS REPORT</small></div></div></nav>
+
+    <section class="workspace">
+      <div class="panel intake-panel">
+        <div class="panel-head"><span class="step">⌖</span><div><h2>诊断任务配置</h2><small>DIAGNOSTIC TASK</small></div><span class="panel-code">CONFIG / 01</span></div>
+        <label class="field-label" for="diagnosisKind">观测模式</label>
+        <select id="diagnosisKind" class="console-select"><option value="live">eNSP 实时诊断 · 读取设备回显</option><option value="intake">材料分析 · 文字 / 截图</option></select>
+        <div id="liveControls" class="live-controls">
+          <div class="live-row"><label for="sourceDevice">源设备<select id="sourceDevice" class="console-select"><option>R1</option><option>R2</option><option>R3</option></select></label><label for="targetIp">目标 IPv4<input id="targetIp" type="text" value="192.168.3.1" placeholder="192.168.3.1" maxlength="15"></label></div>
+          <div class="device-check-row"><button id="checkEnsp" class="secondary-button" type="button">检测 eNSP 连接</button><span id="enspStatus">尚未检测设备 CLI</span></div>
+          <div class="fault-controls">
+            <label for="faultType">演示故障<select id="faultType" class="console-select"><option value="INTERFACE_DOWN">R2 → R3 接口关闭</option><option value="ROUTE_MISSING">R2 目标路由缺失</option></select></label>
+            <div class="fault-actions"><button id="injectFault" class="secondary-button" type="button">一键注入故障</button><button id="recoverFault" class="secondary-button" type="button">恢复所选故障</button></div>
+            <span id="faultStatus" role="status">仅作用于预设 eNSP 实验设备</span>
+          </div>
+          <div class="topology-header"><span>实验拓扑 / R1 — R2 — R3</span><small>节点高亮 = CLI 已响应</small></div>
+          <div class="topology-strip" aria-label="实验拓扑，节点状态表示 Console 响应情况"><div id="routerR1" class="router-node"><svg viewBox="0 0 40 32" aria-hidden="true"><path d="M3 7L20 1 37 7V24L20 31 3 24ZM3 7L20 14 37 7M20 14V31M9 18L15 21M25 21L31 18"/></svg><strong>R1</strong><small>10.0.12.1</small></div><div class="topology-link"><small>10.0.12.0/24</small><span></span></div><div id="routerR2" class="router-node"><svg viewBox="0 0 40 32" aria-hidden="true"><path d="M3 7L20 1 37 7V24L20 31 3 24ZM3 7L20 14 37 7M20 14V31M9 18L15 21M25 21L31 18"/></svg><strong>R2</strong><small>TRANSIT</small></div><div class="topology-link"><small>10.0.23.0/24</small><span></span></div><div id="routerR3" class="router-node"><svg viewBox="0 0 40 32" aria-hidden="true"><path d="M3 7L20 1 37 7V24L20 31 3 24ZM3 7L20 14 37 7M20 14V31M9 18L15 21M25 21L31 18"/></svg><strong>R3</strong><small>10.0.23.2</small></div></div>
+        </div>
+        <label class="field-label" for="question">诊断目标与约束 <small>实时模式可留空 · Ctrl + Enter 执行</small></label>
+        <textarea id="question" maxlength="8000" placeholder="例如：浏览器提示无法连接 192.168.56.101:8090，应该先检查什么？"></textarea>
+        <div id="dropzone" class="dropzone hidden" tabindex="0">
+          <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <div class="upload-icon">＋</div><strong>拖入截图，或点击选择文件</strong><small>PNG / JPG / WEBP · 最大 5 MB</small>
+          <div id="filePreview" class="file-preview hidden"><span id="fileName"></span><button id="removeFile" type="button" aria-label="移除截图">×</button></div>
+          <img id="imagePreview" class="image-preview hidden" alt="待分析截图预览">
+        </div>
+        <button id="diagnoseButton" class="primary-button" type="button"><span class="button-icon">⟡</span><span>启动智能诊断</span><span class="button-arrow">↗</span></button>
+        <div id="inputNote" class="privacy-note"><span>◈</span> 诊断只读设备；演示故障仅限预设实验配置，可一键恢复。</div>
+      </div>
+
+      <div class="panel trace-panel">
+        <div class="panel-head"><span class="step">⌁</span><div><h2>Agent 执行轨迹</h2><small>EXECUTION TRACE</small></div><span id="traceMode" class="mode-tag">STANDBY</span></div>
+        <div class="terminal-bar"><div><i></i><i></i><i></i></div><span>netpath / agent-session</span><span>EVENT STREAM</span></div>
+        <div id="traceLog" class="trace-log" role="log" aria-live="polite">
+          <div class="trace-line muted"><span class="trace-time">--:--:--</span><span class="trace-dot"></span><span>会话就绪，等待诊断任务。</span></div>
+          <div class="trace-line"><span class="trace-time">SYSTEM</span><span class="trace-dot"></span><span>已加载 Console 适配器与 AI Harness；设备状态待检测。</span></div>
+          <div class="trace-line"><span class="trace-time">SYSTEM</span><span class="trace-dot"></span><span>可调用 ping、tracert、路由、接口和 ARP 只读工具</span></div>
+        </div>
+        <div class="trace-footer"><span class="spinner hidden" id="spinner"></span><span id="traceFooter">READY FOR INPUT</span><span class="model-label">OBSERVE → REASON → ACT</span></div>
+        <div class="trace-note"><span>ⓘ</span> 展示实际执行事件与工具结果，不展示模型内部思维链。</div>
+      </div>
+    </section>
+
+    <section id="resultPanel" class="panel result-panel hidden">
+      <div class="result-top"><div class="panel-head"><span class="step success-step">04</span><div><h2>诊断结论与证据</h2><small>EVIDENCE-BASED DIAGNOSIS</small></div></div><span id="resultBadge" class="result-badge">ANALYSIS COMPLETE</span></div>
+      <div class="result-title-row"><div><div id="resultTitle" class="result-title">—</div><p id="resultSummary" class="result-summary">—</p></div><div class="confidence-orb"><span>READ-ONLY<small>只读观测</small></span></div></div>
+      <div class="result-grid">
+        <div class="result-block"><h3><span class="green">◆</span> 已观察事实</h3><ul id="factsList"></ul></div>
+        <div class="result-block"><h3><span class="amber">◆</span> 可能原因</h3><div id="causesList"></div></div>
+        <div class="result-block"><h3><span class="blue">◆</span> 下一步检查</h3><ol id="checksList"></ol></div>
+      </div>
+      <div class="limitation"><span>ⓘ</span><div><strong>分析边界</strong><p id="limitations">—</p></div></div>
+      <div class="result-actions"><span id="resultMeta"></span><button id="downloadResult" class="secondary-button" type="button">↓ 导出诊断 JSON</button></div>
+    </section>
+    <section id="toolPanel" class="panel tool-panel hidden"><div class="panel-head"><span class="step">CLI</span><div><h2>工具观测与原始证据</h2><small>RAW OBSERVATIONS &amp; PROVENANCE</small></div><span class="panel-code">ENSP CONSOLE</span></div><div id="toolCards" class="tool-cards"></div></section>
+    <footer class="footer"><span>NETPATH-DOCTOR <b>/</b> 网络智能诊断研究原型</span><span>LLM AGENT × TOOL HARNESS × ENSP</span></footer>
+  </main>
+  <dialog id="settingsDialog" class="settings-dialog">
+    <form id="settingsForm">
+      <div class="settings-heading"><div><h2>百炼 API 设置</h2><p>只在本机配置；密钥不回显，也不存入浏览器。</p></div><button id="closeSettings" class="secondary-button" type="button" aria-label="关闭设置">×</button></div>
+      <label>运行模式<select id="configMode"><option value="api">真实 API · 百炼模型</option><option value="demo">本地 DEMO · 固定示例</option></select></label>
+      <label>Base URL<input id="configBaseUrl" type="url" required placeholder="https://…/compatible-mode/v1"></label>
+      <label>文字模型 ID<input id="configModel" type="text" required placeholder="请填写控制台实际模型 ID"></label>
+      <label>图片模型 ID（选填）<input id="configVisionModel" type="text" placeholder="不填则用同一模型，该模型必须支持图片输入"></label>
+      <label>API Key<input id="configApiKey" type="password" autocomplete="off" placeholder="粘贴密钥；留空保留当前已配置的密钥"></label>
+      <label class="checkbox-label"><input id="configPersist" type="checkbox">记住到本机配置文件（Git 已忽略；不勾选则仅本次进程生效）</label>
+      <p id="configMessage" role="status"></p>
+      <div class="settings-actions"><button id="saveSettings" class="secondary-button" type="submit">应用设置</button><button id="checkProvider" class="primary-button" type="button">应用并检测 API 连接</button></div>
+      <small>连接检测会向所填接口发送一次文字请求；截图需使用支持视觉输入的模型。</small>
+    </form>
+  </dialog>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ import json
 import re
 import time
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from agent.action_schema import AgentAction, validate_action
 from ai.bailian_client import BailianClient
@@ -134,7 +134,7 @@ def _validate_ipv4(value: Any, field: str) -> str:
     return value
 
 
-def _validate_diagnosis(diagnosis: Any, observations: list[dict[str, Any]]) -> tuple[dict[str, Any] | None, list[str]]:
+def _validate_diagnosis(diagnosis: Any, observations: list[dict[str, Any]], scenario: Mapping[str, Any] | None = None) -> tuple[dict[str, Any] | None, list[str]]:
     if not isinstance(diagnosis, Mapping):
         return None, ["diagnosis must be an object"]
     value = _normalize_diagnosis(diagnosis)
@@ -153,7 +153,10 @@ def _validate_diagnosis(diagnosis: Any, observations: list[dict[str, Any]]) -> t
     if status == "NORMAL":
         if any(value.get(field) is not None for field in ("fault_type", "fault_device", "fault_interface")):
             errors.append("NORMAL diagnosis must not contain a fault")
-        if not any(item.get("action") == "RUN_PING" and item["result"]["facts"].get("reachable") is True for item in successful):
+        if not any(item.get("action") == "RUN_PING" and item["result"]["facts"].get("reachable") is True
+                   and (not scenario or not scenario.get("destination_ip") or item.get("parameters", {}).get("target_ip") == scenario["destination_ip"])
+                   and (not scenario or not scenario.get("source_device") or item.get("target_device") == scenario["source_device"])
+                   for item in successful):
             errors.append("NORMAL requires a successful reachable ping observation")
     elif status == "COMPLETED":
         device = value.get("fault_device")
@@ -222,8 +225,10 @@ class AIHarness:
     max_turns: int = 8
     max_tool_calls: int = 24
     max_tokens: int = 768
+    on_event: Callable[[dict[str, Any]], None] | None = None
+    max_seconds: float | None = None
 
-    def diagnose(self, scenario: Mapping[str, Any]) -> dict[str, Any]:
+    def diagnose(self, scenario: Mapping[str, Any], *, question: str = "") -> dict[str, Any]:
         tools = build_read_only_tools(self.action_catalog)
         system_prompt = (
             "你是网络故障诊断 Agent。只能调用已注册的只读工具获取事实，不能执行配置、删除、恢复、shutdown 或 shell 命令。"
@@ -237,13 +242,20 @@ class AIHarness:
         capabilities = _safe_capability_summary(self.executor)
         if capabilities:
             public_scenario["capabilities"] = capabilities
+        if question:
+            public_scenario["user_request"] = question[:8000]
         messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt}, {"role": "user", "content": "请诊断以下场景，并按需要调用工具：\n" + json.dumps(public_scenario, ensure_ascii=False)}]
         trace: list[dict[str, Any]] = []
         observations: list[dict[str, Any]] = []
         turns = 0
         tool_calls = 0
+        deadline = None if self.max_seconds is None else time.monotonic() + self.max_seconds
         for _ in range(self.max_turns):
+            if deadline is not None and time.monotonic() >= deadline:
+                return {"diagnosis": _need_more_data("Diagnosis time budget reached"), "tool_trace": trace, "turns": turns, "error": "time_budget"}
             turns += 1
+            if self.on_event:
+                self.on_event({"event": "progress", "message": f"第 {turns} 轮：等待模型选择下一项只读检查…"})
             try:
                 response = self.client.chat(messages, tools=tools, max_tokens=self.max_tokens)
             except RuntimeError as exc:
@@ -256,12 +268,14 @@ class AIHarness:
                 if diagnosis is None:
                     diagnosis = _need_more_data("AI returned no structured diagnosis")
                 else:
-                    valid, errors = _validate_diagnosis(diagnosis, observations)
+                    valid, errors = _validate_diagnosis(diagnosis, observations, scenario)
                     if valid is None:
                         diagnosis = _need_more_data("; ".join(errors))
                 return {"diagnosis": diagnosis, "raw_content": content, "tool_trace": trace, "turns": turns}
             messages.append({"role": "assistant", "content": message.get("content"), "tool_calls": calls})
             for call in calls:
+                if deadline is not None and time.monotonic() >= deadline:
+                    return {"diagnosis": _need_more_data("Diagnosis time budget reached"), "tool_trace": trace, "turns": turns, "error": "time_budget"}
                 tool_calls += 1
                 if tool_calls > self.max_tool_calls:
                     return {"diagnosis": _need_more_data("AI tool-call budget reached"), "raw_content": "", "tool_trace": trace, "turns": turns, "error": "tool_budget"}
@@ -279,7 +293,7 @@ class AIHarness:
                     if action_name == "FINISH_DIAGNOSIS":
                         if set(arguments) != {"diagnosis"}:
                             raise ValueError("finish_diagnosis accepts only diagnosis")
-                        terminal_diagnosis, errors = _validate_diagnosis(arguments["diagnosis"], observations)
+                        terminal_diagnosis, errors = _validate_diagnosis(arguments["diagnosis"], observations, scenario)
                         if terminal_diagnosis is None:
                             raise ValueError("; ".join(errors))
                         result = _normalize_result({"success": True, "facts": terminal_diagnosis, "raw_ref": None, "error": None})
@@ -306,6 +320,8 @@ class AIHarness:
                         else:
                             terminal_diagnosis = _need_more_data(f"terminal action rejected: {exc}")
                 trace.append({"call_id": call_id, "tool": tool_name, "action": action_name, "arguments": arguments, "device": arguments.get("device"), "result": result, "elapsed_ms": round((time.perf_counter() - started) * 1000, 2)})
+                if self.on_event:
+                    self.on_event({"event": "agent_action", "trace": trace[-1]})
                 messages.append({"role": "tool", "tool_call_id": call_id, "name": tool_name or "unknown", "content": json.dumps(result, ensure_ascii=False)})
                 if terminal_diagnosis is not None:
                     return {"diagnosis": terminal_diagnosis, "raw_content": "", "tool_trace": trace, "turns": turns}
